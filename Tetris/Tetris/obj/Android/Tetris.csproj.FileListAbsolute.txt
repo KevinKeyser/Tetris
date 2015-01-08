@@ -1,0 +1,17 @@
+C:\Users\Kevin\Documents\SourceTree\Tetris\Tetris\Tetris\bin\Android\Content\font.xnb
+C:\Users\Kevin\Documents\SourceTree\Tetris\Tetris\Tetris\bin\Android\IgnoreMe.dll
+C:\Users\Kevin\Documents\SourceTree\Tetris\Tetris\Tetris\bin\Android\MiLib.dll
+C:\Users\Kevin\Documents\SourceTree\Tetris\Tetris\Tetris\bin\Android\MonoGame.Framework.dll
+C:\Users\Kevin\Documents\SourceTree\Tetris\Tetris\Tetris\bin\Android\SharpDX.dll
+C:\Users\Kevin\Documents\SourceTree\Tetris\Tetris\Tetris\bin\Android\SharpDX.Direct3D11.dll
+C:\Users\Kevin\Documents\SourceTree\Tetris\Tetris\Tetris\bin\Android\SharpDX.XAudio2.dll
+C:\Users\Kevin\Documents\SourceTree\Tetris\Tetris\Tetris\bin\Android\SharpDX.DXGI.dll
+C:\Users\Kevin\Documents\SourceTree\Tetris\Tetris\Tetris\bin\Android\MiLib.pdb
+C:\Users\Kevin\Documents\SourceTree\Tetris\Tetris\Tetris\bin\Android\MonoGame.Framework.xml
+C:\Users\Kevin\Documents\SourceTree\Tetris\Tetris\Tetris\bin\Android\SharpDX.xml
+C:\Users\Kevin\Documents\SourceTree\Tetris\Tetris\Tetris\bin\Android\SharpDX.Direct3D11.xml
+C:\Users\Kevin\Documents\SourceTree\Tetris\Tetris\Tetris\bin\Android\SharpDX.XAudio2.xml
+C:\Users\Kevin\Documents\SourceTree\Tetris\Tetris\Tetris\bin\Android\SharpDX.DXGI.xml
+C:\Users\Kevin\Documents\SourceTree\Tetris\Tetris\Tetris\obj\Android\Tetris.csprojResolveAssemblyReference.cache
+C:\Users\Kevin\Documents\SourceTree\Tetris\Tetris\Tetris\obj\Android\Microsoft.Xna.Framework.RuntimeProfile.txt
+C:\Users\Kevin\Documents\SourceTree\Tetris\Tetris\Tetris\obj\Android\IgnoreMe.dll
