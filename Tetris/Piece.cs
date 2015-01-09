@@ -11,12 +11,10 @@ namespace Tetris
     {
         public Vector2 Position;
         public bool CanRotate;
-        bool[][] blocks;
-        SpriteFont font;
-        public Piece(bool[][] blocks, SpriteFont font)
+        public bool[][] blocks;
+        public Piece(bool[][] blocks)
         {
             this.blocks = blocks;
-            this.font = font;
             Position = new Vector2(0, 0);
             CanRotate = true;
         }
@@ -61,7 +59,7 @@ namespace Tetris
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, SpriteFont font)
         {
             for(int y = 0; y < blocks.Length; y++)
             {
@@ -73,7 +71,7 @@ namespace Tetris
                     {
                         color = Color.White;
                     }
-                    spriteBatch.DrawString(font, text, Position + new Vector2(x * font.MeasureString(text).X, y * font.MeasureString(text).Y), color);
+                    spriteBatch.DrawString(font, text, Position*font.MeasureString(text) + new Vector2(x * font.MeasureString(text).X, y * font.MeasureString(text).Y), color);
                 }
             }
         }
