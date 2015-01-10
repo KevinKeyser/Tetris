@@ -61,16 +61,20 @@ namespace Tetris
 
         public void Draw(SpriteBatch spriteBatch, SpriteFont font)
         {
-            for(int y = 0; y < blocks.Length; y++)
+            Draw(spriteBatch, font, Vector2.Zero);
+        }
+        public void Draw(SpriteBatch spriteBatch, SpriteFont font, Vector2 boardPosition)
+        {
+            for (int y = 0; y < blocks.Length; y++)
             {
-                for(int x = 0; x < blocks[y].Length; x++)
+                for (int x = 0; x < blocks[y].Length; x++)
                 {
                     string text = blocks[y][x] == true ? " 1 " : " 0 ";
                     Color color = Color.Black;
-                    if(text == " 1 ")
+                    if (text == " 1 ")
                     {
                         color = Color.White;
-                        spriteBatch.DrawString(font, text, Position * font.MeasureString(text) + new Vector2(x * font.MeasureString(text).X, y * font.MeasureString(text).Y), color);
+                        spriteBatch.DrawString(font, text, boardPosition + Position * font.MeasureString(text) + new Vector2(x * font.MeasureString(text).X, y * font.MeasureString(text).Y), color);
                     }
                 }
             }

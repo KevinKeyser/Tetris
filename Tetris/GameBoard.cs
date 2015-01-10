@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using MiLib.CoreTypes;
 using System;
 using System.Collections.Generic;
@@ -13,84 +14,137 @@ namespace Tetris
     {
         bool[][] board;
         Piece currentPiece;
+        Queue<Piece> nextPieces;
+        Piece onHoldPiece;
         TimeSpan elapsedTime;
         Random random = new Random();
+        Vector2 boardPosition;
+        bool hasHeld = false;
+        long score = 0;
+        bool isPaused = false;
+        int combo = 0;
+        TimeSpan comboTime = new TimeSpan();
+        TimeSpan elapsedComboTime = new TimeSpan();
+        int lastDeleted = 0;
+        float multiplier = 1;
 
         public GameBoard(int width, int height)
         {
             elapsedTime = new TimeSpan();
-            
-
-            //bool[,] test = new bool[,] { {true, true }, {false, false} };
-            
-
-
+            boardPosition = new Vector2(300, 25);
             board = new bool[height][];
-            for (int i = 0; i < height; i++)
+            for (int h = 0; h < height; h++)
             {
-                board[i] = new bool[width];
+                board[h] = new bool[width];
                 for (int w = 0; w < width; w++)
                 {
-                    board[i][w] = false;
+                    board[h][w] = false;
                 }
+            }
+            nextPieces = new Queue<Piece>();
+            for (int i = 0; i < 5; i++)
+            {
+                nextPieces.Enqueue(newPiece());
             }
             currentPiece = newPiece();
         }
 
         public void Update(GameTime gameTime)
         {
-            if (InputManager.IsKeyPressed(Keys.Left))
+            if (InputManager.IsKeyPressed(Keys.Escape))
             {
-                if (canMoveLeft())
-                {
-                    currentPiece.Position.X--;
-                }
+                isPaused = !isPaused;
             }
-            if (InputManager.IsKeyPressed(Keys.Right))
+            if (isPaused)
             {
-                if (canMoveRight())
-                {
-                    currentPiece.Position.X++;
-                }
+                MediaPlayer.Volume = .25f;
             }
-            if (InputManager.IsKeyPressed(Keys.Up))
+            else
             {
-                currentPiece.RotateLeft();
-                correctPosition();
-            }
-            if (InputManager.IsKeyPressed(Keys.Down))
-            {
-                if (canMoveDown())
+                MediaPlayer.Volume = 1f;
+                if (InputManager.IsKeyPressed(Keys.Left))
                 {
-                    currentPiece.Position.Y++;
+                    if (canMoveLeft())
+                    {
+                        currentPiece.Position.X--;
+                    }
                 }
-                else
+                if (InputManager.IsKeyPressed(Keys.Right))
                 {
+                    if (canMoveRight())
+                    {
+                        currentPiece.Position.X++;
+                    }
+                }
+                if (InputManager.IsKeyPressed(Keys.Up))
+                {
+                    currentPiece.RotateLeft();
+                    correctPosition();
+                }
+                if (InputManager.IsKeyPressed(Keys.Down))
+                {
+                    if (canMoveDown())
+                    {
+                        currentPiece.Position.Y++;
+                    }
+                    else
+                    {
+                        StickToMatrix();
+                        checkremove();
+                        hasHeld = false;
+                    }
+                }
+                if (InputManager.IsKeyPressed(Keys.Space))
+                {
+                    while (canMoveDown())
+                    {
+                        currentPiece.Position.Y++;
+                    }
                     StickToMatrix();
                     checkremove();
+                    hasHeld = false;
                 }
-            }
-            if(InputManager.IsKeyPressed(Keys.Space))
-            {
-                while(canMoveDown())
+                if ((InputManager.IsKeyPressed(Keys.LeftShift) || InputManager.IsKeyPressed(Keys.RightShift)) && !hasHeld)
                 {
-                    currentPiece.Position.Y++;
+                    if (onHoldPiece == null)
+                    {
+                        onHoldPiece = currentPiece;
+                        onHoldPiece.Position = Vector2.Zero;
+                        currentPiece = nextPieces.Dequeue();
+                        nextPieces.Enqueue(newPiece());
+
+                    }
+                    else
+                    {
+                        Piece temp = onHoldPiece;
+                        onHoldPiece = currentPiece;
+                        currentPiece = temp;
+                        onHoldPiece.Position = Vector2.Zero;
+                        currentPiece.Position = new Vector2((board[0].Length - 5) / 2, -2);
+                    }
+                    hasHeld = true;
                 }
-                StickToMatrix();
-                checkremove();
-            }
-            elapsedTime += gameTime.ElapsedGameTime;
-            if (elapsedTime >= TimeSpan.FromSeconds(1))
-            {
-                elapsedTime = new TimeSpan();
-                if (canMoveDown())
+                elapsedComboTime += gameTime.ElapsedGameTime;
+                if(elapsedComboTime >= comboTime)
                 {
-                    currentPiece.Position.Y++;
+                    elapsedComboTime = new TimeSpan();
+                    comboTime = new TimeSpan();
+                    combo = 0;
                 }
-                else
+                elapsedTime += gameTime.ElapsedGameTime;
+                if (elapsedTime >= TimeSpan.FromSeconds(1))
                 {
-                    StickToMatrix();
-                    checkremove();
+                    elapsedTime = new TimeSpan();
+                    if (canMoveDown())
+                    {
+                        currentPiece.Position.Y++;
+                    }
+                    else
+                    {
+                        StickToMatrix();
+                        checkremove();
+                        hasHeld = false;
+                    }
                 }
             }
         }
@@ -114,7 +168,8 @@ namespace Tetris
                     }
                 }
             }
-            currentPiece = newPiece();
+            currentPiece = nextPieces.Dequeue();
+            nextPieces.Enqueue(newPiece());
         }
 
         private void correctPosition()
@@ -141,7 +196,7 @@ namespace Tetris
                 int x = board[0].Length - (int)currentPiece.Position.X;
                 for (int y = 0; y < currentPiece.blocks.Length; y++)
                 {
-                    if (x > 4)
+                    if (x >= 4)
                     {
                         break;
                     }
@@ -198,6 +253,8 @@ namespace Tetris
 
         private void checkremove()
         {
+            int totalScore = 0;
+            int rowsDeleted = 0;
             for(int y = 0; y < board.Length; y++)
             {
                 int fullcounter = 0;
@@ -210,6 +267,7 @@ namespace Tetris
                 }
                 if(fullcounter == board[y].Length)
                 {
+                    rowsDeleted++;
                     for(int x = 0; x < board[y].Length; x++)
                     {
                         board[y][x] = false;
@@ -219,9 +277,26 @@ namespace Tetris
                         for(int x = 0; x < board[yy].Length; x++)
                         {
                             board[yy][x] = board[yy - 1][x];
+                            totalScore += 1;
                         }
                     }
                 }
+            }
+            if (rowsDeleted > 0)
+            {
+                if(rowsDeleted >= lastDeleted)
+                {
+                    multiplier += .1f * rowsDeleted;
+                }
+                else
+                {
+                    multiplier = 1;
+                }
+                combo += rowsDeleted;
+                comboTime += TimeSpan.FromSeconds((Math.Pow(rowsDeleted*multiplier, 3) * 2.0f/combo));
+                elapsedComboTime = new TimeSpan();
+                score += (int)(totalScore * Math.Pow(rowsDeleted*multiplier, combo / 50.0f));
+                lastDeleted = rowsDeleted;
             }
         }
 
@@ -360,10 +435,24 @@ namespace Tetris
                     {
                         color = Color.White;
                     }
-                    spriteBatch.DrawString(font, text, new Vector2(x * font.MeasureString(text).X, y * font.MeasureString(text).Y), color);
+                    spriteBatch.DrawString(font, text, boardPosition + new Vector2(x * font.MeasureString(text).X, y * font.MeasureString(text).Y), color);
                 }
             }
-            currentPiece.Draw(spriteBatch, font);
+            currentPiece.Draw(spriteBatch, font, boardPosition);
+            if(onHoldPiece != null)
+            {
+                onHoldPiece.Draw(spriteBatch, font, new Vector2(25, 50));
+            }
+            for (int i = 0; i < nextPieces.Count; i++)
+            {
+                nextPieces.ToArray()[i].Draw(spriteBatch, font, new Vector2(600, 100 + i * 125));
+            }
+            spriteBatch.DrawString(font, "Multiplier : X" + multiplier.ToString("0.00") + "\nCombo: " + combo.ToString() + "\nComboTime: " + elapsedComboTime.TotalSeconds + "/" + comboTime.TotalSeconds, new Vector2(25, 200), Color.Black);
+            spriteBatch.DrawString(font, "Score: " + score.ToString(), new Vector2(50, 25), Color.Black);
+            if(isPaused)
+            {
+                spriteBatch.DrawString(font, "PAUSED", (new Vector2(GraphicsManager.ScreenWidth, GraphicsManager.ScreenHeight) - font.MeasureString("PAUSED") )/2, Color.Gray);
+            }
         }
     }
 }

@@ -23,6 +23,7 @@ namespace Tetris
 
         public static Piece Square()
         {
+            //return new Piece(new bool[5][] { new bool[] { true, true, true, true, true }, new bool[] { true, true, true, true, true }, new bool[] { true, true, true, true, true }, new bool[] { true, true, true, true, true }, new bool[] { true, true, true, true, true } }) { CanRotate = false };
             return new Piece(new bool[5][] { new bool[] { false, false, false, false, false }, new bool[] { false, false, true, true, false }, new bool[] { false, false, true, true, false }, new bool[] { false, false, false, false, false }, new bool[] { false, false, false, false, false } }) { CanRotate = false };
         }
 

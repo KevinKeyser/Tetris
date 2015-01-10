@@ -55,6 +55,7 @@
     <Compile Include="CoreTypes\Asset.cs" />
     <Compile Include="CoreTypes\AssetManager.cs" />
     <Compile Include="CoreTypes\Camera2D.cs" />
+    <Compile Include="CoreTypes\GraphicsManager.cs" />
     <Compile Include="CoreTypes\InputManager.cs" />
     <Compile Include="CoreTypes\Rotation.cs" />
     <Compile Include="CoreTypes\Sprite.cs" />
