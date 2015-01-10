@@ -65,13 +65,13 @@ namespace Tetris
             {
                 for(int x = 0; x < blocks[y].Length; x++)
                 {
-                    string text = blocks[y][x] == true ? "1" : "0";
+                    string text = blocks[y][x] == true ? " 1 " : " 0 ";
                     Color color = Color.Black;
-                    if(text == "1")
+                    if(text == " 1 ")
                     {
                         color = Color.White;
+                        spriteBatch.DrawString(font, text, Position * font.MeasureString(text) + new Vector2(x * font.MeasureString(text).X, y * font.MeasureString(text).Y), color);
                     }
-                    spriteBatch.DrawString(font, text, Position*font.MeasureString(text) + new Vector2(x * font.MeasureString(text).X, y * font.MeasureString(text).Y), color);
                 }
             }
         }

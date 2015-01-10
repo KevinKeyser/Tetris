@@ -21,14 +21,15 @@ namespace Tetris
         {
             IsMouseVisible = true;
             base.Initialize();
-            graphics.PreferredBackBufferWidth = 1050;
+            graphics.PreferredBackBufferWidth = 380;
+            graphics.PreferredBackBufferHeight = 760;
             graphics.ApplyChanges();
         }
 
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            board = new GameBoard(6, 12);
+            board = new GameBoard(10, 20);
         }
 
         protected override void UnloadContent()
