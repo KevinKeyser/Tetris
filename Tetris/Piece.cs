@@ -11,8 +11,9 @@ namespace Tetris
     {
         public Vector2 Position;
         public bool CanRotate;
-        public bool[][] blocks;
-        public Piece(bool[][] blocks)
+        public Color?[][] blocks;
+
+        public Piece(Color?[][] blocks)
         {
             this.blocks = blocks;
             Position = new Vector2(0, 0);
@@ -23,10 +24,10 @@ namespace Tetris
         {
             if (CanRotate)
             {
-                bool[][] tempblocks = new bool[blocks.Length][];
+                Color?[][] tempblocks = new Color?[blocks.Length][];
                 for (int i = 0; i < blocks.Length; i++)
                 {
-                    tempblocks[i] = new bool[5];
+                    tempblocks[i] = new Color?[5];
                 }
                 for (int y = 0; y < blocks.Length; y++)
                 {
@@ -43,10 +44,10 @@ namespace Tetris
         {
             if (CanRotate)
             {
-                bool[][] tempblocks = new bool[blocks.Length][];
+                Color?[][] tempblocks = new Color?[blocks.Length][];
                 for (int i = 0; i < blocks.Length; i++)
                 {
-                    tempblocks[i] = new bool[5];
+                    tempblocks[i] = new Color?[5];
                 }
                 for (int y = 0; y < blocks.Length; y++)
                 {
@@ -59,22 +60,21 @@ namespace Tetris
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch, SpriteFont font)
+        public void Draw(SpriteBatch spriteBatch, Texture2D pixel)
         {
-            Draw(spriteBatch, font, Vector2.Zero);
+            Draw(spriteBatch, pixel, Vector2.Zero);
         }
-        public void Draw(SpriteBatch spriteBatch, SpriteFont font, Vector2 boardPosition)
+
+        public void Draw(SpriteBatch spriteBatch, Texture2D pixel, Vector2 boardPosition)
         {
             for (int y = 0; y < blocks.Length; y++)
             {
                 for (int x = 0; x < blocks[y].Length; x++)
                 {
-                    string text = blocks[y][x] == true ? " 1 " : " 0 ";
-                    Color color = Color.Black;
-                    if (text == " 1 ")
+                    if(blocks[y][x].HasValue)
                     {
-                        color = Color.White;
-                        spriteBatch.DrawString(font, text, boardPosition + Position * font.MeasureString(text) + new Vector2(x * font.MeasureString(text).X, y * font.MeasureString(text).Y), color);
+                        spriteBatch.Draw(pixel, new Rectangle((int)boardPosition.X + ((int)Position.X + x) * 35, (int)boardPosition.Y + ((int)Position.Y + y) * 35, 35, 35), Color.Black);
+                        spriteBatch.Draw(pixel, new Rectangle((int)boardPosition.X + ((int)Position.X + x) * 35 + 1, (int)boardPosition.Y + ((int)Position.Y + y) * 35 + 1, 33, 33), blocks[y][x].Value);
                     }
                 }
             }

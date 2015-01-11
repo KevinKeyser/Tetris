@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace MiLib.CoreTypes
     public static class GraphicsManager
     {
         public static GraphicsDeviceManager GraphicsDeviceManager;
+        public static ContentManager ContentManager;
 
         public static int ScreenWidth
         {
@@ -49,9 +51,10 @@ namespace MiLib.CoreTypes
             }
         }
 
-        public static void Init(GraphicsDeviceManager graphicsDeviceManager)
+        public static void Init(GraphicsDeviceManager graphicsDeviceManager, ContentManager contentManager)
         {
             GraphicsDeviceManager = graphicsDeviceManager;
+            ContentManager = contentManager;
         }
     }
 }

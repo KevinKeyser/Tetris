@@ -18,7 +18,7 @@ namespace Tetris
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            GraphicsManager.Init(graphics);
+            GraphicsManager.Init(graphics, Content);
         }
 
         protected override void Initialize()

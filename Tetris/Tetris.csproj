@@ -38,7 +38,6 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Block.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GameBoard.cs" />
     <Compile Include="Piece.cs" />

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,39 +8,39 @@ namespace Tetris
 {
     public static class PieceFactory
     {
-        public static Piece Straight()
+        public static Piece Straight(Color color)
         {
-            return new Piece(new bool[5][] { new bool[] { false, false, false, false, false }, new bool[] { false, false, false, false, false }, new bool[] { true, true, true, true, false }, new bool[] { false, false, false, false, false }, new bool[] { false, false, false, false, false } });
+            return new Piece(new Color?[5][] { new Color?[] { null, null, null, null, null }, new Color?[] { null, null, null, null, null }, new Color?[] { color, color, color, color, null }, new Color?[] { null, null, null, null, null }, new Color?[] { null, null, null, null, null } });
         }
-        public static Piece L()
+        public static Piece L(Color color)
         {
-            return new Piece(new bool[5][] { new bool[] { false, false, false, false, false }, new bool[] { false, false, false, true, false }, new bool[] { false, true, true, true, false }, new bool[] { false, false, false, false, false }, new bool[] { false, false, false, false, false } });
-        }
-
-        public static Piece ReverseL()
-        {
-            return new Piece(new bool[5][] { new bool[] { false, false, false, false, false }, new bool[] { false, true, false, false, false }, new bool[] { false, true, true, true, false }, new bool[] { false, false, false, false, false }, new bool[] { false, false, false, false, false } });
+            return new Piece(new Color?[5][] { new Color?[] { null, null, null, null, null }, new Color?[] { null, null, null, color, null }, new Color?[] { null, color, color, color, null }, new Color?[] { null, null, null, null, null }, new Color?[] { null, null, null, null, null } });
         }
 
-        public static Piece Square()
+        public static Piece ReverseL(Color color)
         {
-            //return new Piece(new bool[5][] { new bool[] { true, true, true, true, true }, new bool[] { true, true, true, true, true }, new bool[] { true, true, true, true, true }, new bool[] { true, true, true, true, true }, new bool[] { true, true, true, true, true } }) { CanRotate = false };
-            return new Piece(new bool[5][] { new bool[] { false, false, false, false, false }, new bool[] { false, false, true, true, false }, new bool[] { false, false, true, true, false }, new bool[] { false, false, false, false, false }, new bool[] { false, false, false, false, false } }) { CanRotate = false };
+            return new Piece(new Color?[5][] { new Color?[] { null, null, null, null, null }, new Color?[] { null, color, null, null, null }, new Color?[] { null, color, color, color, null }, new Color?[] { null, null, null, null, null }, new Color?[] { null, null, null, null, null } });
         }
 
-        public static Piece ReverseZ()
+        public static Piece Square(Color color)
         {
-            return new Piece(new bool[5][] { new bool[] { false, false, false, false, false }, new bool[] { false, false, true, true, false }, new bool[] { false, true, true, false, false }, new bool[] { false, false, false, false, false }, new bool[] { false, false, false, false, false } });
+            //return new Piece(new Color?[5][] { new Color?[] { color, color, color, color, color }, new Color?[] { color, color, color, color, color }, new Color?[] { color, color, color, color, color }, new Color?[] { color, color, color, color, color }, new Color?[] { color, color, color, color, color } }) { CanRotate = null };
+            return new Piece(new Color?[5][] { new Color?[] { null, null, null, null, null }, new Color?[] { null, null, color, color, null }, new Color?[] { null, null, color, color, null }, new Color?[] { null, null, null, null, null }, new Color?[] { null, null, null, null, null } }) { CanRotate = false };
         }
 
-        public static Piece Z()
+        public static Piece ReverseZ(Color color)
         {
-            return new Piece(new bool[5][] { new bool[] { false, false, false, false, false }, new bool[] { false, true, true, false, false }, new bool[] { false, false, true, true, false }, new bool[] { false, false, false, false, false }, new bool[] { false, false, false, false, false } });
+            return new Piece(new Color?[5][] { new Color?[] { null, null, null, null, null }, new Color?[] { null, null, color, color, null }, new Color?[] { null, color, color, null, null }, new Color?[] { null, null, null, null, null }, new Color?[] { null, null, null, null, null } });
         }
 
-        public static Piece T()
+        public static Piece Z(Color color)
         {
-            return new Piece(new bool[5][] { new bool[] { false, false, false, false, false }, new bool[] { false, false, true, false, false }, new bool[] { false, true, true, true, false }, new bool[] { false, false, false, false, false }, new bool[] { false, false, false, false, false } });
+            return new Piece(new Color?[5][] { new Color?[] { null, null, null, null, null }, new Color?[] { null, color, color, null, null }, new Color?[] { null, null, color, color, null }, new Color?[] { null, null, null, null, null }, new Color?[] { null, null, null, null, null } });
+        }
+
+        public static Piece T(Color color)
+        {
+            return new Piece(new Color?[5][] { new Color?[] { null, null, null, null, null }, new Color?[] { null, null, color, null, null }, new Color?[] { null, color, color, color, null }, new Color?[] { null, null, null, null, null }, new Color?[] { null, null, null, null, null } });
         }
     }
 }
