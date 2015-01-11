@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Media;
 using MiLib.CoreTypes;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -29,6 +30,7 @@ namespace Tetris
         int lastDeleted = 0;
         float multiplier = 1;
         Texture2D pixel;
+        int level = 1;
 
         public GameBoard(int width, int height)
         {
@@ -75,6 +77,7 @@ namespace Tetris
         }
         private void shadowUpdate()
         {
+            shadowPiece.CanRotate = currentPiece.CanRotate;
             shadowPiece.Position = currentPiece.Position;
             while (canMoveDown(shadowPiece))
             {
@@ -111,9 +114,12 @@ namespace Tetris
                 }
                 if (InputManager.IsKeyPressed(Keys.Up))
                 {
-                    currentPiece.RotateLeft();
-                    correctPosition(currentPiece);
-                    shadowPiece.RotateLeft();
+                    if (canRotateLeft(currentPiece))
+                    {
+                        currentPiece.RotateLeft();
+                        correctPosition(currentPiece);
+                        shadowPiece.RotateLeft();
+                    }
                 }
                 if (InputManager.IsKeyPressed(Keys.Down))
                 {
@@ -203,7 +209,7 @@ namespace Tetris
                 }
             }
         }
-
+        //CAN ROTATE FUNCTION
         private void StickToMatrix()
         {
             for (int y = 0; y < 5; y++)
@@ -306,25 +312,33 @@ namespace Tetris
                 {
                     if (piece.blocks[y][x].HasValue && piece.Position.Y + y >= 0)
                     {
-                        if (board[(int)piece.Position.Y + y][(int)piece.Position.X + x].HasValue == piece.blocks[y][x].HasValue)
+                        if(x + piece.Position.X >= 0 && piece.Position.X + x < board[y].Length)
                         {
-                            if(piece.blocks[y][x].HasValue)
+                            if(board[(int)piece.Position.Y + y][(int)piece.Position.X + x].HasValue)
                             {
-                                if (board[(int)piece.Position.Y + y][(int)piece.Position.X + x].Value == piece.blocks[y][x].Value)
+                                if (y < 2)
                                 {
-                                    if (y < 2)
-                                    {
-                                        piece.Position.Y--;
-                                    }
-                                    else if (x > 2)
-                                    {
-                                        piece.Position.X--;
-                                    }
-                                    else if (x < 2)
-                                    {
-                                        piece.Position.X++;
-                                    }
+                                    piece.Position.Y--;
                                 }
+                                else if (x > 2)
+                                {
+                                    piece.Position.X--;
+                                }
+                                else if (x < 2)
+                                {
+                                    piece.Position.X++;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if(x+piece.Position.X < 0)
+                            {
+                                piece.Position.X++;
+                            }
+                            else
+                            {
+                                piece.Position.X--;
                             }
                         }
                     }
@@ -332,53 +346,35 @@ namespace Tetris
             }
         }
 
-        private void checkremove(Piece piece)
+        private bool canRotateLeft(Piece piece)
         {
-            int totalScore = 0;
-            int rowsDeleted = 0;
-            for(int y = 0; y < board.Length; y++)
+            Color?[][] tempColors = new Color?[5][];
+            for(int i = 0; i < piece.blocks.Length; i++)
             {
-                int fullcounter = 0;
-                for(int x = 0; x < board[y].Length; x++)
+                tempColors[i] = new Color?[5];
+                piece.blocks[i].CopyTo(tempColors[i], 0);
+            }
+            Piece tempPiece = new Piece(tempColors);
+            tempPiece.Position = piece.Position;
+            tempPiece.RotateLeft();
+            correctPosition(tempPiece);
+            for (int y = 0; y < tempPiece.blocks.Length; y++)
+            {
+                for (int x = 0; x < tempPiece.blocks[y].Length; x++)
                 {
-                    if(board[y][x].HasValue)
+                    if (tempPiece.blocks[y][x].HasValue && tempPiece.Position.Y + y >= 0)
                     {
-                        fullcounter++;
-                    }
-                }
-                if(fullcounter == board[y].Length)
-                {
-                    rowsDeleted++;
-                    for(int x = 0; x < board[y].Length; x++)
-                    {
-                        board[y][x] = null;
-                    }
-                    for(int yy = y; yy > 0; yy--)
-                    {
-                        for(int x = 0; x < board[yy].Length; x++)
+                        if (tempPiece.Position.X + x >= 0 && tempPiece.Position.X + x < board[y].Length)
                         {
-                            board[yy][x] = board[yy - 1][x];
-                            totalScore += 1;
+                            if (board[(int)tempPiece.Position.Y + y][(int)tempPiece.Position.X + x].HasValue)
+                            {
+                                return false;
+                            }
                         }
                     }
                 }
             }
-            if (rowsDeleted > 0)
-            {
-                if(rowsDeleted >= lastDeleted - 1)
-                {
-                    multiplier += .1f * rowsDeleted;
-                }
-                else
-                {
-                    multiplier = 1;
-                }
-                combo += rowsDeleted;
-                comboTime += TimeSpan.FromSeconds((Math.Pow(rowsDeleted*multiplier, 2) * 2.0f/combo));
-                elapsedComboTime = new TimeSpan();
-                score += (int)(totalScore * Math.Pow(rowsDeleted*multiplier, combo / 50.0f));
-                lastDeleted = rowsDeleted;
-            }
+            return true;
         }
 
         private bool canMoveLeft(Piece piece)
@@ -456,7 +452,7 @@ namespace Tetris
             {
                 for (int x = 0; x < piece.blocks[y].Length; x++)
                 {
-                    if (piece.blocks[y][x].HasValue && piece.Position.Y + y >= 0)
+                    if (piece.blocks[y][x].HasValue && piece.Position.Y + y >= 0 && piece.Position.X + x >= 0 && piece.Position.X + x <= board[y].Length)
                     {
                         if(board[(int)piece.Position.Y + y + 1][(int)piece.Position.X + x].HasValue == piece.blocks[y][x].HasValue)
                         {
@@ -466,6 +462,59 @@ namespace Tetris
                 }
             }
             return true;
+        }
+
+        private void checkremove(Piece piece)
+        {
+            int totalScore = 0;
+            int rowsDeleted = 0;
+            for (int y = 0; y < board.Length; y++)
+            {
+                int fullcounter = 0;
+                for (int x = 0; x < board[y].Length; x++)
+                {
+                    if (board[y][x].HasValue)
+                    {
+                        fullcounter++;
+                    }
+                }
+                if (fullcounter == board[y].Length)
+                {
+                    rowsDeleted++;
+                    for (int x = 0; x < board[y].Length; x++)
+                    {
+                        board[y][x] = null;
+                    }
+                    for (int yy = y; yy > 0; yy--)
+                    {
+                        for (int x = 0; x < board[yy].Length; x++)
+                        {
+                            board[yy][x] = board[yy - 1][x];
+                            totalScore += 1;
+                        }
+                    }
+                }
+            }
+            if (rowsDeleted > 0)
+            {
+                if (rowsDeleted >= lastDeleted - 1)
+                {
+                    multiplier += .1f * rowsDeleted;
+                }
+                else
+                {
+                    multiplier = 1;
+                }
+                combo += rowsDeleted;
+                comboTime += TimeSpan.FromSeconds((Math.Pow(rowsDeleted * multiplier, 2) * 2.0f / combo));
+                elapsedComboTime = new TimeSpan();
+                score += (int)(totalScore * Math.Pow(rowsDeleted * multiplier, combo / 50.0f));
+                level += rowsDeleted;
+                if (lastDeleted < rowsDeleted)
+                {
+                    lastDeleted = rowsDeleted;
+                }
+            }
         }
 
         private Piece newPiece()
