@@ -10,22 +10,14 @@ namespace TetrisConnection
 {
     public class TetrisConnection : ITetrisConnection
     {
-        public string GetData(int value)
+        public string[] GetPlayers(int matchID)
         {
-            return string.Format("You entered: {0}", value);
+            throw new NotImplementedException();
         }
 
-        public CompositeType GetDataUsingDataContract(CompositeType composite)
+        public void AddPlayer(int matchID)
         {
-            if (composite == null)
-            {
-                throw new ArgumentNullException("composite");
-            }
-            if (composite.BoolValue)
-            {
-                composite.StringValue += "Suffix";
-            }
-            return composite;
+            throw new NotImplementedException();
         }
     }
 }

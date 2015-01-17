@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiLib", "MiLib\MiLib.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TetrisConnection", "TetrisConnection\TetrisConnection.csproj", "{610F7D90-0477-47A1-98E6-68101AC4153D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fmod", "FMod\Fmod.csproj", "{AD2D4643-78A7-44C5-BBAB-828C9C156130}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,16 @@ Global
 		{610F7D90-0477-47A1-98E6-68101AC4153D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{610F7D90-0477-47A1-98E6-68101AC4153D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{610F7D90-0477-47A1-98E6-68101AC4153D}.Release|x86.ActiveCfg = Release|Any CPU
+		{AD2D4643-78A7-44C5-BBAB-828C9C156130}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD2D4643-78A7-44C5-BBAB-828C9C156130}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD2D4643-78A7-44C5-BBAB-828C9C156130}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{AD2D4643-78A7-44C5-BBAB-828C9C156130}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{AD2D4643-78A7-44C5-BBAB-828C9C156130}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AD2D4643-78A7-44C5-BBAB-828C9C156130}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD2D4643-78A7-44C5-BBAB-828C9C156130}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD2D4643-78A7-44C5-BBAB-828C9C156130}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{AD2D4643-78A7-44C5-BBAB-828C9C156130}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{AD2D4643-78A7-44C5-BBAB-828C9C156130}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

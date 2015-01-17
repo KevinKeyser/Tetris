@@ -19,9 +19,3 @@
 /processorParam:TextureFormat=Compressed
 /build:font.spritefont
 
-#begin TetrisTitle.mp3
-/importer:Mp3Importer
-/processor:SongProcessor
-/processorParam:Quality=Best
-/build:TetrisTitle.mp3
-

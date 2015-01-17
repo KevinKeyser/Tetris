@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
 using MiLib.CoreTypes;
 using System;
 using System.Collections.Generic;
@@ -32,10 +31,10 @@ namespace Tetris
         TimeSpan elapsedComboTime;
         Vector2 boardPosition;
         bool hasHeld;
-        bool isPaused;
+        public bool isPaused;
         bool lose;
         ulong score;
-        int level;
+        public int level;
         int combo;
         float multiplier;
         int lastDeleted;
@@ -50,7 +49,7 @@ namespace Tetris
             this.height = height;
             pixel = new Texture2D(GraphicsManager.GraphicsDeviceManager.GraphicsDevice, 1, 1);
             pixel.SetData<Color>(new Color[] { Color.White });
-            boardPosition = new Vector2(300, 25);
+            boardPosition = new Vector2(300, 100);
             board = new Color?[this.height][];
             init();
         }
@@ -65,11 +64,11 @@ namespace Tetris
                 }
             }
             pieceCounter = new List<int>();
+            nextPieces = new Queue<Piece>();
             for (int i = 0; i < 7; i++)
             {
                 pieceCounter.Add(0);
             }
-            nextPieces = new Queue<Piece>();
             for (int i = 0; i < 5; i++)
             {
                 nextPieces.Enqueue(newPiece());
@@ -115,7 +114,7 @@ namespace Tetris
                 currentPiece.blocks[i].CopyTo(temp[i], 0);
             }
 
-            shadowPiece = new Piece(temp);
+            shadowPiece = new Piece(temp, currentPiece.ID);
 
             for (int y = 0; y < shadowPiece.blocks.Length; y++)
             {
@@ -145,13 +144,8 @@ namespace Tetris
                 {
                     isPaused = !isPaused;
                 }
-                if (isPaused)
+                if (!isPaused)
                 {
-                    MediaPlayer.Volume = .25f;
-                }
-                else
-                {
-                    MediaPlayer.Volume = 1f;
                     if (InputManager.IsKeyPressed(Keys.OemPlus))
                     {
                         rowToAdd = MathHelper.Clamp(rowToAdd + 1, 1, height);
@@ -315,7 +309,7 @@ namespace Tetris
                 tempColors[i] = new Color?[5];
                 piece.blocks[i].CopyTo(tempColors[i], 0);
             }
-            Piece tempPiece = new Piece(tempColors);
+            Piece tempPiece = new Piece(tempColors, piece.ID);
             tempPiece.Position = piece.Position;
             tempPiece.RotateLeft();
             correctPosition(tempPiece);
@@ -551,6 +545,10 @@ namespace Tetris
                             totalScore += 1;
                         }
                     }
+                    for (int x = 0; x < board[y].Length; x++)
+                    {
+                        board[0][x] = null;
+                    }
                 }
             }
             if (rowsDeleted > 0)
@@ -580,19 +578,40 @@ namespace Tetris
         private Piece newPiece()
         {
             Piece newPiece;
-            int number = random.Next(7);
-            for (int i = 0; i < pieceCounter.Count; i++)
+            bool reloop = false;
+            int number = 0;
+            do
             {
-                if(number == i)
+                reloop = false;
+                int pieceCount = 0;
+                number = random.Next(7);
+                for (int i = 0; i < nextPieces.ToArray().Length; i++)
                 {
-                    continue;
+                    if (number == nextPieces.ToArray()[i].ID)
+                    {
+                        pieceCount++;
+                        if (pieceCount >= 2)
+                        {
+                            i = -1;
+                            pieceCount = 0;
+                            number = random.Next(7);
+                            continue;
+                        }
+                    }
                 }
-                if(pieceCounter[i] <= pieceCounter[number] - 7)
+                for (int i = 0; i < pieceCounter.Count; i++)
                 {
-                    number = random.Next(7);
-                    i = 0;
+                    if (number == i)
+                    {
+                        continue;
+                    }
+                    if (pieceCounter[i] <= pieceCounter[number] - 7)
+                    {
+                        reloop = true;
+                        break;
+                    }
                 }
-            }
+            } while (reloop);
             switch (number)
             {
                 case 0:
@@ -608,10 +627,10 @@ namespace Tetris
                     newPiece = PieceFactory.Square(Color.Yellow);
                     break;
                 case 4:
-                    newPiece = PieceFactory.Z(Color.Green);
+                    newPiece = PieceFactory.ReverseZ(Color.Red);
                     break;
                 case 5:
-                    newPiece = PieceFactory.ReverseZ(Color.Red);
+                    newPiece = PieceFactory.Z(Color.Green);
                     break;
                 case 6:
                     newPiece = PieceFactory.T(Color.Purple);
@@ -662,6 +681,16 @@ namespace Tetris
                     spriteBatch.Draw(pixel, new Rectangle((int)boardPosition.X + x * 35, (int)boardPosition.Y + y * 35, 35, 35), Color.Black);
                     Color color = board[y][x].HasValue ? board[y][x].Value : Color.Lerp(Color.White, Color.Transparent, .25f);
                     spriteBatch.Draw(pixel, new Rectangle((int)boardPosition.X + x * 35 + 1, (int)boardPosition.Y + y * 35 + 1, 33, 33), color);
+                    if (board[y][x].HasValue)
+                    {
+                        for (int cross = 0; cross < 35; cross++)
+                        {
+                            spriteBatch.Draw(pixel, new Vector2(boardPosition.X + x * 35 + cross, boardPosition.Y + y * 35 + cross), Color.Black);
+                            spriteBatch.Draw(pixel, new Vector2(boardPosition.X + x * 35 + 35 - cross, boardPosition.Y + y * 35 + cross), Color.Black);
+                        }
+                        spriteBatch.Draw(pixel, new Rectangle((int)boardPosition.X + x * 35 + 8, (int)boardPosition.Y + y * 35 + 8, 20, 20), Color.Black);
+                        spriteBatch.Draw(pixel, new Rectangle((int)boardPosition.X + x * 35 + 9, (int)boardPosition.Y + y * 35 + 9, 18, 18), board[y][x].Value);
+                    }
                     //spriteBatch.DrawString(font, text, boardPosition + new Vector2(x * font.MeasureString(text).X, y * font.MeasureString(text).Y), color);
                 }
             }
@@ -673,9 +702,9 @@ namespace Tetris
             }
             for (int i = 0; i < nextPieces.Count; i++)
             {
-                nextPieces.ToArray()[i].Draw(spriteBatch, pixel, new Vector2(600, 100 + i * 125));
+                nextPieces.ToArray()[i].Draw(spriteBatch, pixel, new Vector2(600, 100 + i * 35 * 5));
             }
-            spriteBatch.DrawString(font, "Multiplier : X" + multiplier.ToString("0.00") + "\nCombo: " + combo.ToString() + "\nComboTime: " + elapsedComboTime.TotalSeconds.ToString("0.0") + "/" + comboTime.TotalSeconds.ToString("0.0"), new Vector2(10, 200), Color.Black);
+            spriteBatch.DrawString(font, "Multiplier : X" + multiplier.ToString("0.00") + "\nCombo: " + combo.ToString() + "\nComboTime: " + elapsedComboTime.TotalSeconds.ToString("0.0") + "/" + comboTime.TotalSeconds.ToString("0.0"), new Vector2(10, 250), Color.Black);
             spriteBatch.DrawString(font, "Level:" + level + "\nScore: " + score.ToString(), new Vector2(150, 0), Color.Black);
             if (isPaused)
             {

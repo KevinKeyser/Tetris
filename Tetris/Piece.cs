@@ -12,12 +12,14 @@ namespace Tetris
         public Vector2 Position;
         public bool CanRotate;
         public Color?[][] blocks;
+        public int ID;
 
-        public Piece(Color?[][] blocks)
+        public Piece(Color?[][] blocks, int id)
         {
             this.blocks = blocks;
             Position = new Vector2(0, 0);
             CanRotate = true;
+            ID = id;
         }
 
         public void RotateLeft()
@@ -75,6 +77,13 @@ namespace Tetris
                     {
                         spriteBatch.Draw(pixel, new Rectangle((int)boardPosition.X + ((int)Position.X + x) * 35, (int)boardPosition.Y + ((int)Position.Y + y) * 35, 35, 35), Color.Black);
                         spriteBatch.Draw(pixel, new Rectangle((int)boardPosition.X + ((int)Position.X + x) * 35 + 1, (int)boardPosition.Y + ((int)Position.Y + y) * 35 + 1, 33, 33), blocks[y][x].Value);
+                        for (int cross = 0; cross < 35; cross++)
+                        {
+                            spriteBatch.Draw(pixel, new Vector2(boardPosition.X + (Position.X + x) * 35 + cross, boardPosition.Y + (Position.Y + y) * 35 + cross), Color.Black);
+                            spriteBatch.Draw(pixel, new Vector2(boardPosition.X + (Position.X + x) * 35 + 35 - cross, boardPosition.Y + (Position.Y + y) * 35 + cross), Color.Black);
+                        }
+                        spriteBatch.Draw(pixel, new Rectangle((int)boardPosition.X + ((int)Position.X + x) * 35 + 8, (int)boardPosition.Y + ((int)Position.Y + y) * 35 +8, 20, 20), Color.Black);
+                        spriteBatch.Draw(pixel, new Rectangle((int)boardPosition.X + ((int)Position.X + x) * 35 + 9, (int)boardPosition.Y + ((int)Position.Y + y) * 35 + 9, 18, 18), blocks[y][x].Value);
                     }
                 }
             }
