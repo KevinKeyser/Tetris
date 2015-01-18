@@ -60,6 +60,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Content\Master Bank.bank">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Master Bank.strings.bank">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TetrisTitle.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

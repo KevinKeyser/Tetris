@@ -12,9 +12,12 @@ namespace Tetris
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         GameBoard board;
-        FMOD.System soundSystem;
-        FMOD.Sound titleMusic;
-        FMOD.Channel channel;
+        FMOD.Studio.System soundSystem;
+        FMOD.Studio.Bank soundBank;
+        FMOD.Studio.Bank stringBank;
+        FMOD.Studio.EventDescription[] events;
+        FMOD.Studio.EventInstance TetrisTitleEvent;
+        RESULT result;
         float frequency;
 
         public Game1()
@@ -31,12 +34,15 @@ namespace Tetris
             base.Initialize();
             GraphicsManager.ScreenHeight = 1000;
             GraphicsManager.ScreenWidth = 900;
-
-            FMOD.Factory.System_Create(out soundSystem);
-            soundSystem.init(1, INITFLAGS.NORMAL, IntPtr.Zero);
-            soundSystem.createSound(Environment.CurrentDirectory + "/TetrisTitle.mp3", MODE.LOOP_NORMAL, out titleMusic);
-            soundSystem.playSound(titleMusic, null, false, out channel);
-            channel.getFrequency(out frequency);
+            FMOD.Studio.System.create(out soundSystem);
+            soundSystem.initialize(1, FMOD.Studio.INITFLAGS.NORMAL, INITFLAGS.NORMAL, System.IntPtr.Zero);
+            result = soundSystem.loadBankFile(Environment.CurrentDirectory + @"\Content\Master Bank.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out soundBank);
+            result = soundSystem.loadBankFile(Environment.CurrentDirectory + @"\Content\Master Bank.strings.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out stringBank);
+            result = soundBank.getEventList(out events);
+            events[0].createInstance(out TetrisTitleEvent);
+            TetrisTitleEvent.setParameterValue("Level", 1);
+            TetrisTitleEvent.setVolume(1);
+            TetrisTitleEvent.start();
         }
 
         protected override void LoadContent()
@@ -47,22 +53,31 @@ namespace Tetris
 
         protected override void UnloadContent()
         {
+            TetrisTitleEvent.release();
+            for (int i = 0; i < events.Length; i++)
+            {
+                events[i].releaseAllInstances();
+            }
+            stringBank.unload();
+            soundBank.unload();
+            soundSystem.release();
         }
 
         protected override void Update(GameTime gameTime)
         {
             InputManager.Update();
             soundSystem.update();
+            
             board.Update(gameTime);
+            TetrisTitleEvent.setParameterValue("Level", board.level);
             if (board.isPaused)
             {
-                channel.setVolume(.25f);
+                TetrisTitleEvent.setVolume(.25f);
             }
             else
             {
-                channel.setVolume(1f);
+                TetrisTitleEvent.setVolume(1f);
             }
-            channel.setFrequency(frequency + frequency * board.level / 1000);
             base.Update(gameTime);
         }
 
@@ -71,7 +86,6 @@ namespace Tetris
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
             board.Draw(spriteBatch, Content.Load<SpriteFont>("font"));
-
             spriteBatch.End();
             base.Draw(gameTime);
         }
