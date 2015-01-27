@@ -63,6 +63,12 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BoardInfo.cs" />
+    <Compile Include="Encrypter.cs" />
+    <Compile Include="Enums.cs" />
+    <Compile Include="Message.cs" />
+    <Compile Include="PieceInfo.cs" />
+    <Compile Include="Spectator.cs" />
     <Compile Include="TetrisConnection.svc.cs">
       <DependentUpon>TetrisConnection.svc</DependentUpon>
     </Compile>

@@ -58,6 +58,8 @@
     <Compile Include="CoreTypes\GraphicsManager.cs" />
     <Compile Include="CoreTypes\InputManager.cs" />
     <Compile Include="CoreTypes\Rotation.cs" />
+    <Compile Include="CoreTypes\Screen.cs" />
+    <Compile Include="CoreTypes\ScreenManager.cs" />
     <Compile Include="CoreTypes\Sprite.cs" />
     <Compile Include="CoreTypes\Util.cs" />
     <Compile Include="Interfaces\IDraw.cs" />

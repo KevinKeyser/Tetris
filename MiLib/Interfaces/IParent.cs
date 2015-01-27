@@ -7,7 +7,5 @@ namespace MiLib.Interfaces
 {
     public interface IParent : IPosition
     {
-        float X { get; set; }
-        float Y { get; set; }
     }
 }

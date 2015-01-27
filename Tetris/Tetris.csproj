@@ -38,8 +38,8 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Game1.cs" />
-    <Compile Include="GameBoard.cs" />
+    <Compile Include="GameApplication.cs" />
+    <Compile Include="GameScreen.cs" />
     <Compile Include="Piece.cs" />
     <Compile Include="PieceFactory.cs" />
     <Compile Include="Program.cs" />
@@ -49,6 +49,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
+    <Compile Include="SoundSystem.cs" />
+    <Compile Include="TitleScreen.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">

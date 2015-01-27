@@ -157,7 +157,7 @@ namespace MiLib.UserInterface
             {
                 Debug.WriteLine("Button - Texture2D up cannot be null");
             }
-            else if ((up.Bounds != down.Bounds && down != null) || (up.Bounds != hover.Bounds && hover != null) || (up.Bounds != disabled.Bounds && disabled != null))
+            else if ((down != null && up.Bounds != down.Bounds) || (hover != null && up.Bounds != hover.Bounds) || (disabled != null && up.Bounds != disabled.Bounds))
             {
                 Debug.WriteLine("Button - Texture2D images must be the same size or null");
             }
