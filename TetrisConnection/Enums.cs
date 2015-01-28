@@ -21,4 +21,10 @@ namespace TetrisConnection
         InLobby     = 6,
         InGame      = 7
     }
+
+    public enum PowerUp
+    {
+        None        = 0,
+        Default     = 1
+    }
 }

@@ -10,7 +10,7 @@ using System.Text;
 
 namespace TetrisConnection
 {
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
     public class TetrisConnection : ITetrisConnection
     {
         SqlConnection connection = new SqlConnection("Server=KEVIN-PC\\SQLEXPRESS; Database=Tetris; user=TetrisUser; password=tetris");
@@ -73,7 +73,7 @@ namespace TetrisConnection
             command.CommandType = CommandType.StoredProcedure;
             command.CommandText = "usp_CreateAccount";
             command.Parameters.AddWithValue("@Username", username);
-            command.Parameters.AddWithValue("@Password", password);
+            command.Parameters.AddWithValue("@Password", Encrypter.PasswordEncrypt(password));
             command.Parameters.AddWithValue("@FirstName", firstname);
             command.Parameters.AddWithValue("@LastName", lastname);
             command.Parameters.AddWithValue("@Email", email);
@@ -126,6 +126,19 @@ namespace TetrisConnection
             command.CommandText = "usp_ChangeUsername";
             command.Parameters.AddWithValue("@AccountID", accountID);
             command.Parameters.AddWithValue("@Username", username);
+            command.ExecuteNonQuery();
+            connection.Close();
+        }
+
+        public void SetCurrentCustomPiece(int accountID, int customPieceID)
+        {
+            connection.Open();
+            SqlCommand command = new SqlCommand();
+            command.Connection = connection;
+            command.CommandType = CommandType.StoredProcedure;
+            command.CommandText = "usp_UpdateMatchAccount";
+            command.Parameters.AddWithValue("@AccountID", accountID);
+            command.Parameters.AddWithValue("@CustomPieceID", customPieceID);
             command.ExecuteNonQuery();
             connection.Close();
         }
@@ -227,7 +240,7 @@ namespace TetrisConnection
             connection.Close();
         }
 
-        public int CreateMatch(int accountID, GameMode gameMode, string roomName, string password, bool isChatEnabled, bool isSpectatingEnabled, bool isPowerUpEnabled, bool isCustomPieceEnabled, int customPiece, bool isPausingEnabled, int startingLevel, int maxPlayers, int boardWidth, int boardHeight)
+        public int CreateMatch(int accountID, GameMode gameMode, string roomName, string password, bool isChatEnabled, bool isSpectatingEnabled, bool isPowerUpEnabled, bool isCustomPieceEnabled, bool isPausingEnabled, int startingLevel, int maxPlayers, int boardWidth, int boardHeight)
         {
             connection.Open();
             SqlCommand command = new SqlCommand();
@@ -242,7 +255,6 @@ namespace TetrisConnection
             command.Parameters.AddWithValue("@IsSpectatingEnabled", isSpectatingEnabled);
             command.Parameters.AddWithValue("@IsPowerUpEnabled", isPowerUpEnabled);
             command.Parameters.AddWithValue("@IsCustomPieceEnabled", isCustomPieceEnabled);
-            command.Parameters.AddWithValue("@CustomPiece", customPiece);
             command.Parameters.AddWithValue("@IsPausingEnabled", isPausingEnabled);
             command.Parameters.AddWithValue("@StartingLevel", startingLevel);
             command.Parameters.AddWithValue("@MaxPlayers", maxPlayers);
@@ -291,59 +303,153 @@ namespace TetrisConnection
         public void DeleteMatch(int matchID)
         {
             connection.Open();
-
-
+            SqlCommand command = new SqlCommand();
+            command.Connection = connection;
+            command.CommandType = CommandType.StoredProcedure;
+            command.CommandText = "usp_DeleteMatch";
+            command.Parameters.AddWithValue("@MatchID", matchID);
+            command.ExecuteNonQuery();
             connection.Close();
         }
 
-        public int AddAccountToMatch(int matchID, int accountID, int customPieceID)
+        public int AddAccountToMatch(int matchID, int accountID)
         {
             connection.Open();
+            SqlCommand command = new SqlCommand();
+            command.Connection = connection;
+            command.CommandType = CommandType.StoredProcedure;
+            command.CommandText = "usp_AddAccountToMatch";
+            command.Parameters.AddWithValue("@MatchID", matchID);
+            command.Parameters.AddWithValue("@AccountID", accountID);
 
-
+            SqlDataAdapter dataAdapter = new SqlDataAdapter(command);
+            DataTable dataTable = new DataTable();
+            dataAdapter.Fill(dataTable);
             connection.Close();
-            return 1;
-        }
-
-        public void UpdateMatchAccount(int matchID, int accountID, int customPieceID)
-        {
-            connection.Open();
-
-
-            connection.Close();
+            if(dataTable.Rows.Count > 0)
+            {
+                return int.Parse(dataTable.Rows[0]["BoardID"].ToString());
+            }
+            return 0;
         }
 
         public void UpdateQueuedPieces(int boardID, int[] pieceID)
         {
             connection.Open();
-
-
+            for (int i = 0; i < pieceID.Length; i++)
+            {
+                SqlCommand command = new SqlCommand();
+                command.Connection = connection;
+                command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = "usp_UpdateQueuedPiece";
+                command.Parameters.AddWithValue("@BoardID", boardID);
+                command.Parameters.AddWithValue("@PieceID", pieceID[i]);
+                command.Parameters.AddWithValue("@QueuedPlace", i+1);
+                command.ExecuteNonQuery();
+            }
             connection.Close();
         }
 
-        public void DeleteMatchAccount(int matchID, int AccountID)
+        public void DeleteMatchAccount(int matchID, int accountID)
         {
             connection.Open();
-
-
+            SqlCommand command = new SqlCommand();
+            command.Connection = connection;
+            command.CommandType = CommandType.StoredProcedure;
+            command.CommandText = "usp_DeleteMatchAccount";
+            command.Parameters.AddWithValue("@MatchID", matchID);
+            command.Parameters.AddWithValue("@AccountID", accountID);
+            command.ExecuteNonQuery();
             connection.Close();
         }
 
-        public void UpdateBoardData(int boardID, int[][] PackedColors)
+        public void UpdateBoardData(int boardID, int[][] packedColors)
         {
             connection.Open();
-
-
-            connection.Close();
+            for (int y = 0; y < packedColors.Length; y++)
+            {
+                for(int x = 0; x < packedColors[y].Length; x++)
+                {
+                    SqlCommand command = new SqlCommand();
+                    command.Connection = connection;
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.CommandText = "usp_UpdateBoardData";
+                    command.Parameters.AddWithValue("@BoardID", boardID);
+                    command.Parameters.AddWithValue("@RowID", y);
+                    command.Parameters.AddWithValue("@ColumnID", x);
+                    command.Parameters.AddWithValue("@PackedColor", packedColors[y][x]);
+                    command.ExecuteNonQuery(); 
+                }
+            }
+           connection.Close();
         }
 
-        public BoardInfo GetBoardInfo(int boardID)
+        public BoardInfo[] GetBoardInfo(int matchID)
         {
             connection.Open();
+            SqlCommand command = new SqlCommand();
+            command.Connection = connection;
+            command.CommandType = CommandType.StoredProcedure;
+            command.CommandText = "usp_GetBoardInfo";
+            command.Parameters.AddWithValue("@MatchID", matchID);
 
+            SqlDataAdapter dataAdapter = new SqlDataAdapter(command);
+            DataTable dataTable = new DataTable();
+            dataAdapter.Fill(dataTable);
 
+            BoardInfo[] boardInfo = new BoardInfo[dataTable.Rows.Count];
+            for (int i = 0; i < boardInfo.Length; i++)
+            {
+                BoardInfo board = new BoardInfo();
+                board.AccountID = int.Parse(dataTable.Rows[i]["AccountID"].ToString());
+                board.BoardID = int.Parse(dataTable.Rows[i]["BoardID"].ToString());
+                board.Ranking = int.Parse(dataTable.Rows[i]["Ranking"].ToString());
+                board.TimeFinished = DateTime.Parse(dataTable.Rows[i]["TimeFinished"].ToString());
+                board.CurrentPieceID = int.Parse(dataTable.Rows[i]["CurrentPieceID"].ToString());
+                board.PieceX = int.Parse(dataTable.Rows[i]["PieceX"].ToString());
+                board.PieceY = int.Parse(dataTable.Rows[i]["PieceY"].ToString());
+                board.Rotation = int.Parse(dataTable.Rows[0]["Rotation"].ToString());
+                board.HeldPieceID = int.Parse(dataTable.Rows[i]["HeldPieceID"].ToString());
+                board.Combo = int.Parse(dataTable.Rows[i]["Combo"].ToString());
+                board.Multiplier = float.Parse(dataTable.Rows[i]["Multiplier"].ToString());
+                board.Level = int.Parse(dataTable.Rows[i]["Level"].ToString());
+                board.Score = int.Parse(dataTable.Rows[i]["Score"].ToString());
+                board.PowerUp = (PowerUp)int.Parse(dataTable.Rows[i]["PowerUp"].ToString());
+                board.BoardHeight = int.Parse(dataTable.Rows[i]["BoardHeight"].ToString());
+                board.BoardWidth = int.Parse(dataTable.Rows[i]["BoardWidth"].ToString());
+                command.CommandText = "usp_GetQueuedPieces";
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@BoardID", board.BoardID);
+
+                dataAdapter = new SqlDataAdapter(command);
+                DataTable queuedPieces = new DataTable();
+                dataAdapter.Fill(queuedPieces);
+                board.QueuedPieceID = new int[queuedPieces.Rows.Count];
+                for (int ii = 0; ii < board.QueuedPieceID.Length; ii++)
+                {
+                    board.QueuedPieceID[ii] = int.Parse(queuedPieces.Rows[ii]["PieceID"].ToString());
+                }
+
+                command.CommandText = "usp_GetBoardData";
+
+                dataAdapter = new SqlDataAdapter(command);
+                DataTable boardData = new DataTable();
+                dataAdapter.Fill(boardData);
+                board.PackedColors = new int?[board.BoardHeight][];
+                for (int ii = 0; ii < board.PackedColors.Length; ii++)
+                {
+                    board.PackedColors[ii] = new int?[board.BoardWidth];
+                }
+
+                for(int ii = 0; ii < boardData.Rows.Count; ii++)
+                {
+                    board.PackedColors[int.Parse(boardData.Rows[ii]["RowID"].ToString())][int.Parse(boardData.Rows[ii]["ColumnID"].ToString())] = int.Parse(boardData.Rows[ii]["PackedColor"].ToString());
+                }
+
+                boardInfo[i] = board;
+            }
             connection.Close();
-            return new BoardInfo();
+            return boardInfo;
         }
 
         public void SpectateMatch(int matchID, int accountID)
@@ -362,13 +468,13 @@ namespace TetrisConnection
             connection.Close();
         }
 
-        public Spectator[] GetSpectators(int matchID)
+        public SpectatorInfo[] GetSpectators(int matchID)
         {
             connection.Open();
 
 
             connection.Close();
-            return new Spectator[1];
+            return new SpectatorInfo[1];
         }
 
         public void CreatePiece(int accountID, int[][] packedColors)
@@ -427,6 +533,26 @@ namespace TetrisConnection
 
 
             connection.Close();
+        }
+
+        public AccountInfo[] GetFriends(int accountID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GiveChatGroupOwnership(int chatGroupID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GiveMatchOwnership(int matchID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateBoardInfo(int boardID, int currentPieceID, int pieceX, int pieceY, int rotation, int? heldPieceID, int combo, float multiplier, int level, int score, PowerUp powerup)
+        {
+            throw new NotImplementedException();
         }
     }
 }

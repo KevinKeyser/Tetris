@@ -32,6 +32,10 @@ namespace TetrisConnection
         [OperationContract]
         void ChangeUsername(int accountID, string username);
 
+        [OperationContract]
+        void SetCurrentCustomPiece(int accountID, int customPieceID);
+
+        [OperationContract]
         void UpdateSecurityQuestion(int accountID, int questionNumber, int questionID, string answer);
 
         [OperationContract]
@@ -41,18 +45,27 @@ namespace TetrisConnection
         void AddFriend(int accountID, int friendID);
 
         [OperationContract]
+        AccountInfo[] GetFriends(int accountID);
+
+        [OperationContract]
         void DeleteFriend(int accountID, int friendID);
 
         [OperationContract]
         int CreateChatGroup(int userID, int[] accountID);
 
         [OperationContract]
+        void GiveChatGroupOwnership(int chatGroupID);
+
+        [OperationContract]
         void AddGroupAccess(Guid externalChatGroupID, int accountID);
 
         [OperationContract]
-        int CreateMatch(int accountID, GameMode gameMode, string roomName, string password, bool isChatEnabled, bool isSpectatingEnabled, bool isPowerUpEnabled, bool isCustomPieceEnabled, int customPiece, bool isPausingEnabled, int startingLevel, int maxPlayers, int boardWidth, int boardHeight);
+        int CreateMatch(int accountID, GameMode gameMode, string roomName, string password, bool isChatEnabled, bool isSpectatingEnabled, bool isPowerUpEnabled, bool isCustomPieceEnabled, bool isPausingEnabled, int startingLevel, int maxPlayers, int boardWidth, int boardHeight);
 
         [OperationContract]
+        void GiveMatchOwnership(int matchID);
+
+        [OperationContract] 
         void StartMatch(int matchID);
 
         [OperationContract]
@@ -62,10 +75,7 @@ namespace TetrisConnection
         void DeleteMatch(int matchID);
 
         [OperationContract]
-        int AddAccountToMatch(int matchID, int accountID, int customPieceID);
-
-        [OperationContract]
-        void UpdateMatchAccount(int matchID, int accountID, int customPieceID);
+        int AddAccountToMatch(int matchID, int accountID);
 
         [OperationContract]
         void UpdateQueuedPieces(int boardID, int[] pieceID);
@@ -77,16 +87,19 @@ namespace TetrisConnection
         void UpdateBoardData(int boardID, int[][] PackedColors);
 
         [OperationContract]
-        BoardInfo GetBoardInfo(int boardID);
+        void UpdateBoardInfo(int boardID, int currentPieceID, int pieceX, int pieceY, int rotation, int? heldPieceID, int combo, float multiplier, int level, int score, PowerUp powerup);
+
+        [OperationContract]
+        BoardInfo[] GetBoardInfo(int boardID);
 
         [OperationContract]
         void SpectateMatch(int matchID, int accountID);
 
         [OperationContract]
-        void StopSpectating(int matchID, int accountID);
+        SpectatorInfo[] GetSpectators(int matchID);
 
         [OperationContract]
-        Spectator[] GetSpectators(int matchID);
+        void StopSpectating(int matchID, int accountID);
 
         [OperationContract]
         void CreatePiece(int accountID, int[][] packedColors);
@@ -108,7 +121,5 @@ namespace TetrisConnection
 
         [OperationContract]
         void DeleteMessage(int messageID);
-
-
     }
 }

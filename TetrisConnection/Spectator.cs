@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace TetrisConnection
 {
     [DataContract]
-    public class Spectator
+    public class SpectatorInfo
     {
         [DataMember]
         public int SpectatorID;

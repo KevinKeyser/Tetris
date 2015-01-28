@@ -23,16 +23,16 @@ namespace TetrisConnection
         public int BoardHeight;
 
         [DataMember]
-        public int[][] PackedColors;
+        public int?[][] PackedColors;
 
         [DataMember]
-        public int Ranking;
+        public int? Ranking;
 
         [DataMember]
         public DateTime? TimeFinished;
 
         [DataMember]
-        public int currentPieceID;
+        public int CurrentPieceID;
 
         [DataMember]
         public int PieceX;
@@ -44,7 +44,7 @@ namespace TetrisConnection
         public int Rotation;
 
         [DataMember]
-        public int HeldPieceID;
+        public int? HeldPieceID;
 
         [DataMember]
         public int Combo;
@@ -56,9 +56,12 @@ namespace TetrisConnection
         public int Level;
         
         [DataMember]
-        public int PowerUp;
+        public PowerUp PowerUp;
 
         [DataMember]
         public int[] QueuedPieceID;
+
+        [DataMember]
+        public int Score;
     }
 }
