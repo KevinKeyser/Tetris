@@ -54,7 +54,7 @@ namespace TetrisConnection
         int CreateChatGroup(int userID, int[] accountID);
 
         [OperationContract]
-        void GiveChatGroupOwnership(int chatGroupID);
+        void GiveChatGroupOwnership(int chatGroupID, int accountID);
 
         [OperationContract]
         void AddGroupAccess(Guid externalChatGroupID, int accountID);
@@ -63,7 +63,7 @@ namespace TetrisConnection
         int CreateMatch(int accountID, GameMode gameMode, string roomName, string password, bool isChatEnabled, bool isSpectatingEnabled, bool isPowerUpEnabled, bool isCustomPieceEnabled, bool isPausingEnabled, int startingLevel, int maxPlayers, int boardWidth, int boardHeight);
 
         [OperationContract]
-        void GiveMatchOwnership(int matchID);
+        void GiveMatchOwnership(int matchID, int accountID);
 
         [OperationContract] 
         void StartMatch(int matchID);
@@ -84,10 +84,10 @@ namespace TetrisConnection
         void DeleteMatchAccount(int matchID, int AccountID);
 
         [OperationContract]
-        void UpdateBoardData(int boardID, int[][] PackedColors);
+        void UpdateBoardData(int boardID, int?[][] PackedColors);
 
         [OperationContract]
-        void UpdateBoardInfo(int boardID, int currentPieceID, int pieceX, int pieceY, int rotation, int? heldPieceID, int combo, float multiplier, int level, int score, PowerUp powerup);
+        void UpdateBoardInfo(int boardID, int? currentPieceID, int pieceX, int pieceY, int rotation, int? heldPieceID, int combo, float multiplier, int level, int score, PowerUp powerup);
 
         [OperationContract]
         BoardInfo[] GetBoardInfo(int boardID);
@@ -102,10 +102,10 @@ namespace TetrisConnection
         void StopSpectating(int matchID, int accountID);
 
         [OperationContract]
-        void CreatePiece(int accountID, int[][] packedColors);
+        void CreatePiece(int accountID);
 
         [OperationContract]
-        void UpdatePiece(int pieceID, int[][] packedColors);
+        void UpdatePiece(int pieceID, int?[][] packedColors);
 
         [OperationContract]
         PieceInfo GetPiece(int pieceID);

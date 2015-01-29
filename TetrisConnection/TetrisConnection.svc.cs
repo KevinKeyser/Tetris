@@ -14,8 +14,7 @@ namespace TetrisConnection
     public class TetrisConnection : ITetrisConnection
     {
         SqlConnection connection = new SqlConnection("Server=KEVIN-PC\\SQLEXPRESS; Database=Tetris; user=TetrisUser; password=tetris");
-
-
+       
         public int Login(string username, string password)
         {
             connection.Open();
@@ -249,8 +248,22 @@ namespace TetrisConnection
             command.CommandText = "usp_CreateMatch";
             command.Parameters.AddWithValue("@AccountID", accountID);
             command.Parameters.AddWithValue("@GameMode", (int)gameMode);
-            command.Parameters.AddWithValue("@RoomName", roomName);
-            command.Parameters.AddWithValue("@Password", Encrypter.PasswordEncrypt(password));
+            if(roomName != "")
+            {
+                command.Parameters.AddWithValue("@RoomName", roomName);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@RoomName", DBNull.Value);
+            }
+            if (password != "")
+            {
+                command.Parameters.AddWithValue("@Password", Encrypter.PasswordEncrypt(password));
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@Password", DBNull.Value);
+            }
             command.Parameters.AddWithValue("@IsChatEnabled", isChatEnabled);
             command.Parameters.AddWithValue("@IsSpectatingEnabled", isSpectatingEnabled);
             command.Parameters.AddWithValue("@IsPowerUpEnabled", isPowerUpEnabled);
@@ -363,7 +376,7 @@ namespace TetrisConnection
             connection.Close();
         }
 
-        public void UpdateBoardData(int boardID, int[][] packedColors)
+        public void UpdateBoardData(int boardID, int?[][] packedColors)
         {
             connection.Open();
             for (int y = 0; y < packedColors.Length; y++)
@@ -377,7 +390,14 @@ namespace TetrisConnection
                     command.Parameters.AddWithValue("@BoardID", boardID);
                     command.Parameters.AddWithValue("@RowID", y);
                     command.Parameters.AddWithValue("@ColumnID", x);
-                    command.Parameters.AddWithValue("@PackedColor", packedColors[y][x]);
+                    if(packedColors[y][x].HasValue)
+                    {
+                        command.Parameters.AddWithValue("@PackedColor", packedColors[y][x]);
+                    }
+                    else
+                    {
+                        command.Parameters.AddWithValue("@PackedColor", DBNull.Value);
+                    }
                     command.ExecuteNonQuery(); 
                 }
             }
@@ -403,13 +423,28 @@ namespace TetrisConnection
                 BoardInfo board = new BoardInfo();
                 board.AccountID = int.Parse(dataTable.Rows[i]["AccountID"].ToString());
                 board.BoardID = int.Parse(dataTable.Rows[i]["BoardID"].ToString());
-                board.Ranking = int.Parse(dataTable.Rows[i]["Ranking"].ToString());
-                board.TimeFinished = DateTime.Parse(dataTable.Rows[i]["TimeFinished"].ToString());
+                if (dataTable.Rows[i]["Ranking"] == DBNull.Value)
+                {
+                    board.Ranking = null;
+                    board.TimeFinished = null;
+                }
+                else
+                {
+                    board.Ranking = int.Parse(dataTable.Rows[i]["Ranking"].ToString());
+                    board.TimeFinished = DateTime.Parse(dataTable.Rows[i]["TimeFinished"].ToString());
+                }
                 board.CurrentPieceID = int.Parse(dataTable.Rows[i]["CurrentPieceID"].ToString());
                 board.PieceX = int.Parse(dataTable.Rows[i]["PieceX"].ToString());
                 board.PieceY = int.Parse(dataTable.Rows[i]["PieceY"].ToString());
                 board.Rotation = int.Parse(dataTable.Rows[0]["Rotation"].ToString());
-                board.HeldPieceID = int.Parse(dataTable.Rows[i]["HeldPieceID"].ToString());
+                if (dataTable.Rows[i]["HeldPieceID"] == DBNull.Value)
+                {
+                    board.HeldPieceID = null;
+                }
+                else
+                {
+                    board.HeldPieceID = int.Parse(dataTable.Rows[i]["HeldPieceID"].ToString());
+                }
                 board.Combo = int.Parse(dataTable.Rows[i]["Combo"].ToString());
                 board.Multiplier = float.Parse(dataTable.Rows[i]["Multiplier"].ToString());
                 board.Level = int.Parse(dataTable.Rows[i]["Level"].ToString());
@@ -441,9 +476,16 @@ namespace TetrisConnection
                     board.PackedColors[ii] = new int?[board.BoardWidth];
                 }
 
-                for(int ii = 0; ii < boardData.Rows.Count; ii++)
+                for (int ii = 0; ii < boardData.Rows.Count; ii++)
                 {
-                    board.PackedColors[int.Parse(boardData.Rows[ii]["RowID"].ToString())][int.Parse(boardData.Rows[ii]["ColumnID"].ToString())] = int.Parse(boardData.Rows[ii]["PackedColor"].ToString());
+                    if (boardData.Rows[ii]["PackedColor"] == DBNull.Value)
+                    {
+                        board.PackedColors[int.Parse(boardData.Rows[ii]["RowID"].ToString())][int.Parse(boardData.Rows[ii]["ColumnID"].ToString())] = null;
+                    }
+                    else
+                    {
+                        board.PackedColors[int.Parse(boardData.Rows[ii]["RowID"].ToString())][int.Parse(boardData.Rows[ii]["ColumnID"].ToString())] = int.Parse(boardData.Rows[ii]["PackedColor"].ToString());
+                    }
                 }
 
                 boardInfo[i] = board;
@@ -455,104 +497,334 @@ namespace TetrisConnection
         public void SpectateMatch(int matchID, int accountID)
         {
             connection.Open();
-
-
+            SqlCommand command = new SqlCommand();
+            command.Connection = connection;
+            command.CommandType = CommandType.StoredProcedure;
+            command.CommandText = "usp_SpectateMatch";
+            command.Parameters.AddWithValue("@MatchID", matchID);
+            command.Parameters.AddWithValue("@AccountID", accountID);
+            command.ExecuteNonQuery();
             connection.Close();
         }
 
         public void StopSpectating(int matchID, int accountID)
         {
             connection.Open();
-
-
+            SqlCommand command = new SqlCommand();
+            command.Connection = connection;
+            command.CommandType = CommandType.StoredProcedure;
+            command.CommandText = "usp_StopSpectating";
+            command.Parameters.AddWithValue("@MatchID", matchID);
+            command.Parameters.AddWithValue("@AccountID", accountID);
+            command.ExecuteNonQuery();
             connection.Close();
         }
 
         public SpectatorInfo[] GetSpectators(int matchID)
         {
             connection.Open();
+            SqlCommand command = new SqlCommand();
+            command.Connection = connection;
+            command.CommandType = CommandType.StoredProcedure;
+            command.CommandText = "usp_GetSpectators";
+            command.Parameters.AddWithValue("@MatchID", matchID);
 
-
+            SqlDataAdapter dataAdapter = new SqlDataAdapter(command);
+            DataTable dataTable = new DataTable();
+            dataAdapter.Fill(dataTable);
             connection.Close();
-            return new SpectatorInfo[1];
+
+            SpectatorInfo[] spectators = new SpectatorInfo[dataTable.Rows.Count];
+            for (int i = 0; i < spectators.Length; i++)
+            {
+                SpectatorInfo temp = new SpectatorInfo();
+                temp.AccountID = int.Parse(dataTable.Rows[i]["AccountID"].ToString());
+                temp.MatchID = int.Parse(dataTable.Rows[i]["MatchID"].ToString());
+                temp.SpectatorID = int.Parse(dataTable.Rows[i]["SpectatorID"].ToString());
+
+                if (dataTable.Rows[i]["TimeEnded"] == DBNull.Value)
+                {
+                    temp.TimeEnded = null;
+                }
+                else
+                {
+                    temp.TimeEnded = DateTime.Parse(dataTable.Rows[i]["TimeEnded"].ToString());
+                }
+                temp.TimeStarted = DateTime.Parse(dataTable.Rows[i]["TimeStarted"].ToString());
+                spectators[i] = temp;
+            }
+            return spectators;
         }
 
-        public void CreatePiece(int accountID, int[][] packedColors)
+        public void CreatePiece(int accountID)
         {
             connection.Open();
-
-
+            SqlCommand command = new SqlCommand();
+            command.Connection = connection;
+            command.CommandType = CommandType.StoredProcedure;
+            command.CommandText = "usp_CreatePiece";
+            command.Parameters.AddWithValue("@AccountID", accountID);
+            command.ExecuteNonQuery();
             connection.Close();
         }
 
-        public void UpdatePiece(int pieceID, int[][] packedColors)
+        public void UpdatePiece(int pieceID, int?[][] packedColors)
         {
             connection.Open();
-
-
+            for(int y = 0; y < packedColors.Length; y++)
+            {
+                for(int x = 0; x < packedColors[y].Length; x++)
+                {
+                    SqlCommand command = new SqlCommand();
+                    command.Connection = connection;
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.CommandText = "usp_UpdatePiece";
+                    command.Parameters.AddWithValue("@PieceID", pieceID);
+                    command.Parameters.AddWithValue("@RowID", y);
+                    command.Parameters.AddWithValue("@ColumnID", x);
+                    if(packedColors[y][x].HasValue)
+                    {
+                        command.Parameters.AddWithValue("@PackedColor", packedColors[y][x]);
+                    }
+                    else
+                    {
+                        command.Parameters.AddWithValue("@PackedColor", DBNull.Value);
+                    }
+                    command.ExecuteNonQuery();
+                }
+            }
             connection.Close();
         }
 
         public PieceInfo GetPiece(int pieceID)
         {
             connection.Open();
+            SqlCommand command = new SqlCommand();
+            command.Connection = connection;
+            command.CommandType = CommandType.StoredProcedure;
+            command.CommandText = "usp_GetPiece";
+            command.Parameters.AddWithValue("@PieceID", pieceID);
 
-
+            SqlDataAdapter dataAdapter = new SqlDataAdapter(command);
+            DataTable dataTable = new DataTable();
+            dataAdapter.Fill(dataTable);
             connection.Close();
-            return new PieceInfo();
+            if(dataTable.Rows.Count > 0)
+            {
+                PieceInfo pieceInfo = new PieceInfo();
+                pieceInfo.OwnerID = int.Parse(dataTable.Rows[0]["AccountID"].ToString());
+                pieceInfo.PieceID = int.Parse(dataTable.Rows[0]["PieceID"].ToString());
+                pieceInfo.PackedColors = new int?[5][];
+                for(int i = 0; i < pieceInfo.PackedColors.Length; i++)
+                {
+                    pieceInfo.PackedColors[i] = new int?[5];
+                }
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    if (dataTable.Rows[i]["PackedColor"] == DBNull.Value)
+                    {
+                        pieceInfo.PackedColors[int.Parse(dataTable.Rows[i]["RowID"].ToString())][int.Parse(dataTable.Rows[i]["ColumnID"].ToString())] = null;
+                    }
+                    else
+                    {
+                        pieceInfo.PackedColors[int.Parse(dataTable.Rows[i]["RowID"].ToString())][int.Parse(dataTable.Rows[i]["ColumnID"].ToString())] = int.Parse(dataTable.Rows[i]["PackedColor"].ToString());
+                    }
+                }
+                return pieceInfo;
+            }
+            return null;
         }
 
         public void DeletePiece(int pieceID)
         {
             connection.Open();
-
-
+            SqlCommand command = new SqlCommand();
+            command.Connection = connection;
+            command.CommandType = CommandType.StoredProcedure;
+            command.CommandText = "usp_DeletePiece";
+            command.Parameters.AddWithValue("@PieceID", pieceID);
+            command.ExecuteNonQuery();
             connection.Close();
         }
 
         public void SendMessage(int accountID, int chatGroupID, string message)
         {
             connection.Open();
-
-
+            SqlCommand command = new SqlCommand();
+            command.Connection = connection;
+            command.CommandType = CommandType.StoredProcedure;
+            command.CommandText = "usp_SendMessage";
+            command.Parameters.AddWithValue("@AccountID", accountID);
+            command.Parameters.AddWithValue("@ChatGroupID", chatGroupID);
+            command.Parameters.AddWithValue("@Message", message);
+            command.ExecuteNonQuery();
             connection.Close();
         }
 
         public Message[] GetMessages(int accountID, int chatGroupID, DateTime lastTimeRecieved)
         {
             connection.Open();
+            SqlCommand command = new SqlCommand();
+            command.Connection = connection;
+            command.CommandType = CommandType.StoredProcedure;
+            command.CommandText = "usp_GetMessages";
+            command.Parameters.AddWithValue("@AccountID", accountID);
+            command.Parameters.AddWithValue("@ChatGroupID", chatGroupID);
+            command.Parameters.AddWithValue("@LastTimeRecieved", lastTimeRecieved.ToShortDateString());
 
+            SqlDataAdapter dataAdapter = new SqlDataAdapter(command);
+            DataTable dataTable = new DataTable();
+            dataAdapter.Fill(dataTable);
 
+            Message[] messages = new Message[dataTable.Rows.Count];
+            for (int i = 0; i < messages.Length; i++)
+            {
+                Message temp = new Message();
+                if(dataTable.Rows[i]["DeletionDate"] == DBNull.Value)
+                {
+                    temp.DeletionDate = null;
+                }
+                else
+                {
+                    temp.DeletionDate = DateTime.Parse(dataTable.Rows[i]["DeletionDate"].ToString());
+                }
+                temp.GroupID = int.Parse(dataTable.Rows[i]["GroupID"].ToString());
+                temp.MessageID = int.Parse(dataTable.Rows[i]["MessageID"].ToString());
+                temp.MessageString = dataTable.Rows[i]["Message"].ToString();
+                temp.SenderID = int.Parse(dataTable.Rows[i]["AccountID"].ToString());
+                temp.TimeSent = DateTime.Parse(dataTable.Rows[i]["TimeSent"].ToString());
+            }
             connection.Close();
-            return new Message[1];
+            return messages;
         }
 
         public void DeleteMessage(int messageID)
         {
             connection.Open();
-
-
+            SqlCommand command = new SqlCommand();
+            command.Connection = connection;
+            command.CommandType = CommandType.StoredProcedure;
+            command.CommandText = "usp_DeleteMessage";
+            command.Parameters.AddWithValue("@MessageID", messageID);
+            command.ExecuteNonQuery();
             connection.Close();
         }
 
         public AccountInfo[] GetFriends(int accountID)
         {
-            throw new NotImplementedException();
+            connection.Open();
+            SqlCommand command = new SqlCommand();
+            command.Connection = connection;
+            command.CommandType = CommandType.StoredProcedure;
+            command.CommandText = "usp_GetFriends";
+
+            SqlDataAdapter dataAdapter = new SqlDataAdapter(command);
+            DataTable dataTable = new DataTable();
+            dataAdapter.Fill(dataTable);
+
+            connection.Close();
+
+            AccountInfo[] accountInfo = new AccountInfo[dataTable.Rows.Count];
+            for (int i = 0; i < accountInfo.Length;i++)
+            {
+                AccountInfo temp = new AccountInfo();
+                temp.AccountID = int.Parse(dataTable.Rows[i]["AccountID"].ToString());
+                if(dataTable.Rows[i]["CurrentMatchID"] == DBNull.Value)
+                {
+                    temp.CurrentMatchID = null;
+                }
+                else
+                {
+                    temp.CurrentMatchID = int.Parse(dataTable.Rows[i]["CurrentMatchID"].ToString());
+                }
+                if(dataTable.Rows[i]["CustomPieceID"] == DBNull.Value)
+                {
+                    temp.CustomPieceID = null;
+                }
+                else
+                {
+                    temp.CustomPieceID = int.Parse(dataTable.Rows[i]["CustomPieceID"].ToString());
+                }
+                temp.ExternalAccountID = Guid.Parse(dataTable.Rows[i]["ExternalAccountID"].ToString());
+                temp.FirstName = dataTable.Rows[i]["FirstName"].ToString();
+                temp.LastName = dataTable.Rows[i]["LastName"].ToString();
+                temp.Username = dataTable.Rows[i]["Username"].ToString();
+                temp.UserStatus = (UserStatus)int.Parse(dataTable.Rows[i]["UserStatusID"].ToString());
+                accountInfo[i] = temp;
+            }
+            return accountInfo;
         }
 
-        public void GiveChatGroupOwnership(int chatGroupID)
+        public void GiveChatGroupOwnership(int chatGroupID, int accountID)
         {
-            throw new NotImplementedException();
+            connection.Open();
+            SqlCommand command = new SqlCommand();
+            command.Connection = connection;
+            command.CommandType = CommandType.StoredProcedure;
+            command.CommandText = "usp_GiveChatGroupOwnership";
+            command.Parameters.AddWithValue("@ChatGroupID", chatGroupID);
+            command.Parameters.AddWithValue("@AccountID", accountID);
+            command.ExecuteNonQuery();
+            connection.Close();
         }
 
-        public void GiveMatchOwnership(int matchID)
+        public void GiveMatchOwnership(int matchID, int accountID)
         {
-            throw new NotImplementedException();
+            connection.Open();
+            SqlCommand command = new SqlCommand();
+            command.Connection = connection;
+            command.CommandType = CommandType.StoredProcedure;
+            command.CommandText = "usp_GiveMatchOwnership";
+            command.Parameters.AddWithValue("@MatchID", matchID);
+            command.Parameters.AddWithValue("@AccountID", accountID);
+            command.ExecuteNonQuery();
+            connection.Close();
         }
 
-        public void UpdateBoardInfo(int boardID, int currentPieceID, int pieceX, int pieceY, int rotation, int? heldPieceID, int combo, float multiplier, int level, int score, PowerUp powerup)
+        public void UpdateBoardInfo(int boardID, int? currentPieceID, int pieceX, int pieceY, int rotation, int? heldPieceID, int combo, float multiplier, int level, int score, PowerUp powerup)
         {
-            throw new NotImplementedException();
+            connection.Open();
+            SqlCommand command = new SqlCommand();
+            command.Connection = connection;
+            command.CommandType = CommandType.StoredProcedure;
+            command.CommandText = "usp_UpdateBoardInfo";
+            command.Parameters.AddWithValue("@BoardID", boardID);
+            if(currentPieceID.HasValue)
+            {
+                command.Parameters.AddWithValue("@CurrentPieceID", currentPieceID.Value);
+                command.Parameters.AddWithValue("@PieceX", pieceX);
+                command.Parameters.AddWithValue("@PieceY", pieceY);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@CurrentPieceID", DBNull.Value);
+                command.Parameters.AddWithValue("@PieceX", DBNull.Value);
+                command.Parameters.AddWithValue("@PieceY", DBNull.Value);
+            }
+            command.Parameters.AddWithValue("@Rotation", rotation);
+            if(heldPieceID.HasValue)
+            {
+                command.Parameters.AddWithValue("@HeldPieceID", heldPieceID.Value);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@HeldPieceID", DBNull.Value);
+            }
+            command.Parameters.AddWithValue("@Combo", combo);
+            command.Parameters.AddWithValue("@Multiplier", multiplier);
+            command.Parameters.AddWithValue("@Level", level);
+            command.Parameters.AddWithValue("@Score", score);
+            if(powerup != PowerUp.None)
+            {
+                command.Parameters.AddWithValue("@PowerUp", powerup);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@PowerUp", DBNull.Value);
+            }
+            command.ExecuteNonQuery();
+            connection.Close();
         }
     }
 }

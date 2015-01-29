@@ -16,6 +16,6 @@ namespace TetrisConnection
         public int OwnerID;
 
         [DataMember]
-        public int[][] PackedColors;
+        public int?[][] PackedColors;
     }
 }
