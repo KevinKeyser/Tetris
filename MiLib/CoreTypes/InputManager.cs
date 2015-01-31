@@ -26,7 +26,15 @@ namespace MiLib.CoreTypes
 		static Vector2 lastMousePosition;
 
         static int lastMouseScroll;
-        static int mouseScroll; 
+        static int mouseScroll;
+
+        public static Keys[] KeysPressed
+        {
+            get
+            {
+                return keyState.GetPressedKeys();
+            }
+        }
 
 		public static Vector2 MousePosition
 		{

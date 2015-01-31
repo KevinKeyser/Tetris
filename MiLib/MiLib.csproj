@@ -63,6 +63,7 @@
     <Compile Include="CoreTypes\Sprite.cs" />
     <Compile Include="CoreTypes\Util.cs" />
     <Compile Include="Interfaces\IDraw.cs" />
+    <Compile Include="Interfaces\IFocusable.cs" />
     <Compile Include="Interfaces\IParent.cs" />
     <Compile Include="Interfaces\IPosition.cs" />
     <Compile Include="Interfaces\ISprite.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="UserInterface\Label.cs" />
     <Compile Include="UserInterface\Panel.cs" />
     <Compile Include="UserInterface\Patch9Image.cs" />
+    <Compile Include="UserInterface\TextBox.cs" />
     <Compile Include="UserInterface\TextButton.cs" />
     <Compile Include="UserInterface\UIComponent.cs" />
     <Compile Include="UserInterface\UIComponentEventArgs.cs" />

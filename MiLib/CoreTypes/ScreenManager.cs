@@ -67,6 +67,14 @@ namespace MiLib.CoreTypes
             }
         }
 
+        public static void Render(SpriteBatch spriteBatch)
+        {
+            if (currentScreen != null)
+            {
+                currentScreen.Render(spriteBatch);
+            }
+        }
+
         public static void Draw(SpriteBatch spriteBatch)
         {
             if(currentScreen != null)

@@ -34,7 +34,11 @@ namespace Tetris
             spriteBatch = new SpriteBatch(GraphicsDevice);
             ScreenManager.AddScreen("TitleScreen", new TitleScreen());
             ScreenManager.AddScreen("GameScreen", new GameScreen(10, 20));
-            ScreenManager.SetScreen("TitleScreen");
+            ScreenManager.AddScreen("LoginScreen", new LoginScreen());
+            ScreenManager.AddScreen("RegisterScreen", new RegisterScreen());
+            ScreenManager.AddScreen("OptionScreen", new OptionScreen());
+            ScreenManager.AddScreen("HiscoreScreen", new HiscoreScreen());
+            ScreenManager.SetScreen("LoginScreen");
         }
 
         protected override void UnloadContent()
@@ -55,6 +59,7 @@ namespace Tetris
 
         protected override void Draw(GameTime gameTime)
         {
+            ScreenManager.Render(spriteBatch);
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
             ScreenManager.Draw(spriteBatch);

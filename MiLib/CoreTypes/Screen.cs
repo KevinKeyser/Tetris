@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MiLib.Interfaces;
+using MiLib.UserInterface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,9 @@ namespace MiLib.CoreTypes
     public abstract class Screen
     {
         protected List<ISprite> sprites = new List<ISprite>();
+        protected List<UIComponent> uiComponents = new List<UIComponent>();
+
+        public bool UIFocused { get; protected set; }
 
         public virtual List<ISprite> Sprites
         {
@@ -24,11 +28,39 @@ namespace MiLib.CoreTypes
             }
         }
 
+        public virtual List<UIComponent> UIComponents
+        {
+            get
+            {
+                return uiComponents;
+            }
+            set
+            {
+                uiComponents = value;
+            }
+        }
+
         public virtual void Update(GameTime gameTime)
         {
             foreach(ISprite sprite in sprites)
             {
                 sprite.Update(gameTime);
+            }
+            foreach (UIComponent uicomponent in uiComponents)
+            {
+                uicomponent.Update(gameTime);
+                if(uiComponents is IFocusable && ((IFocusable)uiComponents).IsFocused)
+                {
+                    UIFocused = true;
+                }
+            }
+        }
+
+        public virtual void Render(SpriteBatch spriteBatch)
+        {
+            foreach (UIComponent uicomponent in uiComponents)
+            {
+                uicomponent.Render(spriteBatch);
             }
         }
 
@@ -37,6 +69,10 @@ namespace MiLib.CoreTypes
             foreach(ISprite sprite in sprites)
             {
                 sprite.Draw(spriteBatch);
+            }
+            foreach (UIComponent uicomponent in uiComponents)
+            {
+                uicomponent.Draw(spriteBatch);
             }
         }
 
