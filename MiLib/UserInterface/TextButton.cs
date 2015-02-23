@@ -64,8 +64,8 @@ namespace MiLib.UserInterface
             }
         }
 
-        public TextButton(GraphicsDevice graphicsDevice, Texture2D up, Texture2D down, Texture2D hover, Texture2D disabled, Color buttonColor, SpriteFont font, string text, Color textColor) :
-            base(graphicsDevice, up, down, hover, disabled, buttonColor)
+        public TextButton(Texture2D up, Texture2D down, Texture2D hover, Texture2D disabled, Color buttonColor, SpriteFont font, string text, Color textColor) :
+            base(up, down, hover, disabled, buttonColor)
         {
             TextColor = textColor;
             Font = font;

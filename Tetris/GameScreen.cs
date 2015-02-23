@@ -44,8 +44,13 @@ namespace Tetris
         SpriteFont font;
         Texture2D pixel;
 
-        SoundSystem soundSystem;
 
+        FMOD.Studio.System soundSystem;
+        FMOD.Studio.Bank soundBank;
+        FMOD.Studio.Bank stringBank;
+        FMOD.Studio.EventDescription[] events;
+        FMOD.Studio.EventInstance TetrisTitleEvent;
+        RESULT result;
 
         public GameScreen(int width, int height)
             : base()
@@ -57,7 +62,15 @@ namespace Tetris
             font = GraphicsManager.ContentManager.Load<SpriteFont>("font");
             boardPosition = new Vector2(300, 100);
             board = new Color?[this.height][];
-            soundSystem = new SoundSystem();
+            FMOD.Studio.System.create(out soundSystem);
+            soundSystem.initialize(1, FMOD.Studio.INITFLAGS.NORMAL, INITFLAGS.NORMAL, System.IntPtr.Zero);
+            result = soundSystem.loadBankFile(Environment.CurrentDirectory + @"\Content\Master Bank.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out soundBank);
+            result = soundSystem.loadBankFile(Environment.CurrentDirectory + @"\Content\Master Bank.strings.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out stringBank);
+            result = soundBank.getEventList(out events);
+            events[0].createInstance(out TetrisTitleEvent);
+            TetrisTitleEvent.setParameterValue("Level", 1);
+            TetrisTitleEvent.setVolume(1);
+            TetrisTitleEvent.start();
             init();
         }
         private void init()
@@ -136,7 +149,7 @@ namespace Tetris
 
         public override void Update(GameTime gameTime)
         {
-            soundSystem.Update(gameTime);
+            soundSystem.update();
             if (lose)
             {
                 if (InputManager.IsKeyPressed(Keys.Enter))
@@ -152,11 +165,11 @@ namespace Tetris
                     isPaused = !isPaused;
                     if (isPaused)
                     {
-                        //TetrisTitleEvent.setVolume(.25f);
+                        TetrisTitleEvent.setVolume(.25f);
                     }
                     else
                     {
-                        //TetrisTitleEvent.setVolume(1f);
+                        TetrisTitleEvent.setVolume(1f);
                     }
                 }
                 if (!isPaused)
@@ -580,7 +593,7 @@ namespace Tetris
                 {
                     lastDeleted = rowsDeleted;
                 }
-               // TetrisTitleEvent.setParameterValue("Level", level);
+                TetrisTitleEvent.setParameterValue("Level", level);
             }
         }
 
@@ -683,7 +696,14 @@ namespace Tetris
 
         public override void UnloadContent()
         {
-
+            TetrisTitleEvent.release();
+            for (int i = 0; i < events.Length; i++)
+            {
+                events[i].releaseAllInstances();
+            }
+            stringBank.unload();
+            soundBank.unload();
+            soundSystem.release();
             base.UnloadContent();
         }
 

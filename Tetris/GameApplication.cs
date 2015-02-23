@@ -24,11 +24,9 @@ namespace Tetris
         protected override void Initialize()
         {
             IsMouseVisible = true;
+            base.Initialize();
             GraphicsManager.ScreenHeight = 1000;
             GraphicsManager.ScreenWidth = 900;
-
-            base.Initialize();
-           
         }
 
         protected override void LoadContent()

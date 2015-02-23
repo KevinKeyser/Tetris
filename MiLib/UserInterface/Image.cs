@@ -170,11 +170,11 @@ namespace MiLib.UserInterface
             set { sourceRectangle = value; }
         }
 
-        public Image(GraphicsDevice graphicsDevice, Texture2D texture, Vector2 position)
-            : this(graphicsDevice, texture, position, null, Color.White, Vector2.One) { }
+        public Image(Texture2D texture, Vector2 position)
+            : this(texture, position, null, Color.White, Vector2.One) { }
 
-        public Image(GraphicsDevice graphicsDevice, Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, Vector2 scale)
-            : base(graphicsDevice, position, texture == null ? Vector2.Zero : new Vector2(texture.Width, texture.Height))
+        public Image(Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, Vector2 scale)
+            : base(position, texture == null ? Vector2.Zero : new Vector2(texture.Width, texture.Height))
         {
             Texture = texture;
             Color = Color.White;

@@ -24,19 +24,12 @@ namespace MiLib.UserInterface
             }
         }
 
-        protected RenderTarget2D renderTarget;
-
         protected IParent parent;
 
         public virtual IParent Parent
         {
             get { return parent; }
-            set 
-            {
-                parent = value;
-                bounds.X = (int)position.X + (parent != null ? (int)parent.X : 0);
-                bounds.Y = (int)position.Y + (parent != null ? (int)parent.Y : 0);
-            }
+            set { parent = value; }
         }
         
         protected bool isVisible;
@@ -60,8 +53,6 @@ namespace MiLib.UserInterface
         {
             get
             {
-                bounds.X = (int)position.X + (parent != null ? (int)parent.X : 0);
-                bounds.Y = (int)position.Y + (parent != null ? (int)parent.Y : 0);
                 return bounds;
             }
             set
@@ -84,8 +75,8 @@ namespace MiLib.UserInterface
             set
             {
                 position = value;
-                bounds.X = (int)position.X + (parent != null ? (int)parent.X : 0);
-                bounds.Y = (int)position.Y + (parent != null ? (int)parent.Y : 0);
+                bounds.X = (int)position.X;
+                bounds.Y = (int)position.Y;
             }
         }
 
@@ -104,7 +95,6 @@ namespace MiLib.UserInterface
                     size = value;
                     bounds.Width = (int)size.X;
                     bounds.Height = (int)size.Y;
-                    renderTarget = new RenderTarget2D(renderTarget.GraphicsDevice, bounds.Width > 0 ? bounds.Width : 1, bounds.Height > 0 ? bounds.Height : 1);
                 }
                 else
                 {
@@ -113,10 +103,10 @@ namespace MiLib.UserInterface
             }
         }
 
-        public UIComponent(GraphicsDevice graphicsDevice, Vector2 position, Vector2 size)
-            : this(graphicsDevice, new Rectangle((int)position.X, (int)position.Y, (int)size.X, (int)size.Y)) { }
+        public UIComponent(Vector2 position, Vector2 size)
+            : this(new Rectangle((int)position.X, (int)position.Y, (int)size.X, (int)size.Y)) { }
 
-        public UIComponent(GraphicsDevice graphicsDevice, Rectangle bounds)
+        public UIComponent(Rectangle bounds)
         {
             this.bounds = bounds;
             position = new Vector2(bounds.X, bounds.Y);
@@ -124,7 +114,6 @@ namespace MiLib.UserInterface
             parent = null;
             isEnabled = true;
             isVisible = true;
-            renderTarget = new RenderTarget2D(graphicsDevice, bounds.Width > 0 ? bounds.Width : 1, bounds.Height > 0 ? bounds.Height : 1);
         }
 
         public virtual void Update(GameTime gameTime)

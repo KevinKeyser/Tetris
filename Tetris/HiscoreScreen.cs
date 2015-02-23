@@ -20,17 +20,17 @@ namespace Tetris
         {
             Texture2D pixel = new Texture2D(GraphicsManager.GraphicsDeviceManager.GraphicsDevice, 1, 1);
             pixel.SetData<Color>(new Color[] { Color.White });
-            classicButton = new TextButton(GraphicsManager.GraphicsDeviceManager.GraphicsDevice, pixel, null, null, null, Color.Green, GraphicsManager.ContentManager.Load<SpriteFont>("font"), "Classic", Color.Black);
+            classicButton = new TextButton(pixel, null, null, null, Color.Green, GraphicsManager.ContentManager.Load<SpriteFont>("font"), "Classic", Color.Black);
             classicButton.Size = new Vector2(200, 50);
             classicButton.Position = new Vector2(100, 50);
             classicButton.LeftClicked += classicButton_LeftClicked;
-
-            timeAttackButton = new TextButton(GraphicsManager.GraphicsDeviceManager.GraphicsDevice, pixel, null, null, null, Color.Green, GraphicsManager.ContentManager.Load<SpriteFont>("font"), "Time Attack", Color.Black);
+            
+            timeAttackButton = new TextButton(pixel, null, null, null, Color.Green, GraphicsManager.ContentManager.Load<SpriteFont>("font"), "Time Attack", Color.Black);
             timeAttackButton.Size = new Vector2(200, 50);
             timeAttackButton.Position = new Vector2(350, 50);
             timeAttackButton.LeftClicked += timeAttackButton_LeftClicked;
 
-            exitButton = new TextButton(GraphicsManager.GraphicsDeviceManager.GraphicsDevice, pixel, null, null, null, Color.Red, GraphicsManager.ContentManager.Load<SpriteFont>("font"), "X", Color.Black);
+            exitButton = new TextButton(pixel, null, null, null, Color.Red, GraphicsManager.ContentManager.Load<SpriteFont>("font"), "X", Color.Black);
             exitButton.Size = new Vector2(50, 50);
             exitButton.Position = new Vector2(GraphicsManager.ScreenWidth + 50, 0);
             exitButton.LeftClicked += exitButton_LeftClicked;
