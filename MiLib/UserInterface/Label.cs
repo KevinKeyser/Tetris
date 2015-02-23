@@ -25,7 +25,7 @@ namespace MiLib.UserInterface
         public string Text;
 
         public Label(string name, GraphicsDevice graphicsDevice, SpriteFont font, string text, Vector2 position)
-            : base(new Rectangle((int)position.X, (int)position.Y, (int)(font.MeasureString(text).X), (int)(font.MeasureString(text).Y)))
+            : base(graphicsDevice, new Rectangle((int)position.X, (int)position.Y, (int)(font.MeasureString(text).X), (int)(font.MeasureString(text).Y)))
         {
             Name = name;
             texture = new Texture2D(graphicsDevice, 1, 1);

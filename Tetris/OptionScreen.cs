@@ -19,12 +19,12 @@ namespace Tetris
         {
             Texture2D pixel = new Texture2D(GraphicsManager.GraphicsDeviceManager.GraphicsDevice, 1, 1);
             pixel.SetData<Color>(new Color[] { Color.White });
-            saveButton = new TextButton(pixel, null, null, null, Color.Green, GraphicsManager.ContentManager.Load<SpriteFont>("font"), "Save", Color.Black);
+            saveButton = new TextButton(GraphicsManager.GraphicsDeviceManager.GraphicsDevice, pixel, null, null, null, Color.Green, GraphicsManager.ContentManager.Load<SpriteFont>("font"), "Save", Color.Black);
             saveButton.Size = new Vector2(200, 50);
             saveButton.Position = new Vector2(350, 400);
             saveButton.LeftClicked += saveButton_LeftClicked;
 
-            backButton = new TextButton(pixel, null, null, null, Color.Green, GraphicsManager.ContentManager.Load<SpriteFont>("font"), "Back", Color.Black);
+            backButton = new TextButton(GraphicsManager.GraphicsDeviceManager.GraphicsDevice, pixel, null, null, null, Color.Green, GraphicsManager.ContentManager.Load<SpriteFont>("font"), "Back", Color.Black);
             backButton.Size = new Vector2(200, 50);
             backButton.Position = new Vector2(100, 400);
             backButton.LeftClicked += backButton_LeftClicked;

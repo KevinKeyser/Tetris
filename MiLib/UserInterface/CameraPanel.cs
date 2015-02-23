@@ -81,16 +81,16 @@ namespace MiLib.UserInterface
             }
         }
 
-        public CameraPanel(Rectangle bounds, Color backColor)
-            : base(bounds, backColor)
+        public CameraPanel(GraphicsDevice graphicsDevice, Rectangle bounds, Color backColor)
+            : base(graphicsDevice, bounds, backColor)
         {
             this.backColor = backColor;
             components = new List<UIComponent>();
             oldSize = new Vector2(bounds.Width, bounds.Height);
         }
 
-        public CameraPanel(Vector2 position, Vector2 size, Color backColor)
-            : base(position, size, backColor)
+        public CameraPanel(GraphicsDevice graphicsDevice, Vector2 position, Vector2 size, Color backColor)
+            : base(graphicsDevice, position, size, backColor)
         {
             this.backColor = backColor;
             components = new List<UIComponent>();

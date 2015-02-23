@@ -20,8 +20,8 @@ namespace Tetris
         {
             Texture2D pixel = new Texture2D(GraphicsManager.GraphicsDeviceManager.GraphicsDevice, 5, 1);
             pixel.SetData<Color>(new Color[] { Color.Black, Color.Gray, Color.DarkGray, Color.White, Color.White });
-            loginButton = new TextButton(pixel, null, null, null, Color.Blue, GraphicsManager.ContentManager.Load<SpriteFont>("font"), "Login", Color.Black);
-            registerButton = new TextButton(pixel, null, null, null, Color.Blue, GraphicsManager.ContentManager.Load<SpriteFont>("font"), "Register", Color.Black);
+            loginButton = new TextButton(GraphicsManager.GraphicsDeviceManager.GraphicsDevice, pixel, null, null, null, Color.Blue, GraphicsManager.ContentManager.Load<SpriteFont>("font"), "Login", Color.Black);
+            registerButton = new TextButton(GraphicsManager.GraphicsDeviceManager.GraphicsDevice, pixel, null, null, null, Color.Blue, GraphicsManager.ContentManager.Load<SpriteFont>("font"), "Register", Color.Black);
             loginButton.Position = new Vector2(600, 100);
             loginButton.Size = new Vector2(200, 75);
             loginButton.LeftClicked += loginButton_LeftClicked;

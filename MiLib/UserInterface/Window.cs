@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MiLib.CoreTypes;
 using MiLib.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,9 @@ namespace MiLib.UserInterface
         public Texture2D WindowTexture;
         public SpriteFont Font;
 
-        public List<Label> Items;
+        public List<UIComponent> Items;
+
+        public bool IsDraggable;
 
         public int SelectedIndex = 0;
         public float X
@@ -44,42 +47,81 @@ namespace MiLib.UserInterface
             }
         }
 
-        public Window(Vector2 position, Vector2 size, SpriteFont font, Texture2D windowTexture)
-            : base(position, size)
+        public Window(GraphicsDevice graphicsDevice, Vector2 position, Vector2 size, SpriteFont font, Texture2D windowTexture)
+            : base(graphicsDevice, position, size)
         {
-            Items = new List<Label>();
+            Items = new List<UIComponent>();
             Font = font;
             WindowTexture = windowTexture;
             WindowColor = Color.White;
             ForegroundSelectionColor = Color.White;
             BackgroundSelectionColor = Color.Blue;
+            IsDraggable = true;
         }
+
+        bool mouseDown = false;
 
         public override void Update(GameTime gameTime)
         {
             if (isVisible)
             {
-                foreach (Label label in Items)
+                foreach (UIComponent component in Items)
                 {
-                    label.Update(gameTime);
-                    label.Bounds = new Rectangle(label.Bounds.X, label.Bounds.Y, Bounds.Width, label.Bounds.Height);
-                    label.IsSelected = false;
-                    label.CenterText();
+                    component.Parent = this;
+                    component.Update(gameTime);
+                }
+                if(InputManager.IsLeftClicked(bounds))
+                {
+                    mouseDown = true;
+                }
+                if(InputManager.IsLeftUp())
+                {
+                    mouseDown = false;
+                }
+                if(IsDraggable && mouseDown)
+                {
+                    Position += InputManager.MouseDragAmount();
                 }
                 base.Update(gameTime);
             }
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Render(SpriteBatch spriteBatch)
         {
+
             if (IsVisible)
             {
-                spriteBatch.Draw(WindowTexture, Bounds, WindowColor);
-                foreach (Label label in Items)
+                base.Render(spriteBatch);
+
+                //render all componenets first
+                foreach (UIComponent component in Items)
                 {
-                    label.Draw(spriteBatch);
+                    component.Render(spriteBatch);
                 }
-                base.Draw(spriteBatch);
+                
+                //drawing to the window's rendertarget
+                renderTarget.GraphicsDevice.SetRenderTarget(renderTarget);
+                spriteBatch.Begin();
+                
+                //draws the background
+                spriteBatch.Draw(WindowTexture, new Rectangle(0,0, bounds.Width, bounds.Height), WindowColor);
+                
+                //draws all RENDERED component
+                foreach(UIComponent component in Items)
+                {
+                    component.Draw(spriteBatch);
+                }
+                
+                spriteBatch.End();
+                renderTarget.GraphicsDevice.SetRenderTarget(null);
+            }
+        }
+        
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            if(isVisible)
+            {
+                spriteBatch.Draw(renderTarget, new Vector2(bounds.X, bounds.Y), Color.White);
             }
         }
 

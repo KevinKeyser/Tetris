@@ -13,6 +13,10 @@ namespace MiLib.CoreTypes
     {
         protected List<ISprite> sprites = new List<ISprite>();
         protected List<UIComponent> uiComponents = new List<UIComponent>();
+        public Color DimColor;
+        public bool Enabled;
+        protected Texture2D pixel;
+
 
         public bool UIFocused { get; protected set; }
 
@@ -40,18 +44,29 @@ namespace MiLib.CoreTypes
             }
         }
 
+        public Screen()
+        {
+            pixel = new Texture2D(GraphicsManager.GraphicsDeviceManager.GraphicsDevice, 1, 1);
+            pixel.SetData<Color>(new Color[] { Color.White });
+            Enabled = true;
+            DimColor = Color.Transparent;
+        }
+
         public virtual void Update(GameTime gameTime)
         {
-            foreach(ISprite sprite in sprites)
+            if (Enabled)
             {
-                sprite.Update(gameTime);
-            }
-            foreach (UIComponent uicomponent in uiComponents)
-            {
-                uicomponent.Update(gameTime);
-                if(uiComponents is IFocusable && ((IFocusable)uiComponents).IsFocused)
+                foreach (ISprite sprite in sprites)
                 {
-                    UIFocused = true;
+                    sprite.Update(gameTime);
+                }
+                foreach (UIComponent uicomponent in uiComponents)
+                {
+                    uicomponent.Update(gameTime);
+                    if (uiComponents is IFocusable && ((IFocusable)uiComponents).IsFocused)
+                    {
+                        UIFocused = true;
+                    }
                 }
             }
         }
@@ -73,6 +88,10 @@ namespace MiLib.CoreTypes
             foreach (UIComponent uicomponent in uiComponents)
             {
                 uicomponent.Draw(spriteBatch);
+            }
+            if(!Enabled)
+            {
+                spriteBatch.Draw(pixel, new Rectangle(0, 0, GraphicsManager.ScreenWidth, GraphicsManager.ScreenHeight), DimColor);
             }
         }
 

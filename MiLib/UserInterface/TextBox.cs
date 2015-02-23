@@ -31,15 +31,12 @@ namespace MiLib.UserInterface
 
         public bool isPassword = false;
 
-        RenderTarget2D renderTarget;
-
 
         public TextBox(GraphicsDevice graphicsDevice, Rectangle bounds, SpriteFont font)
-            : base(bounds)
+            : base(graphicsDevice, bounds)
         {
             pixel = new Texture2D(graphicsDevice, 1, 1);
             pixel.SetData<Color>(new Color[] { Color.White });
-            renderTarget = new RenderTarget2D(graphicsDevice, bounds.Width, bounds.Height);
             text = "";
             this.font = font;
         }

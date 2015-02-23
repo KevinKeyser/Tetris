@@ -144,14 +144,14 @@ namespace MiLib.UserInterface
 		}
 		#endregion
 
-		public Button (Texture2D up, Texture2D down, Texture2D hover, Texture2D disabled, Color buttonColor)
-            : this(up, down, hover, disabled, buttonColor, new Rectangle(0,0,0,0)) { }
+        public Button(GraphicsDevice graphicsDevice, Texture2D up, Texture2D down, Texture2D hover, Texture2D disabled, Color buttonColor)
+            : this(graphicsDevice, up, down, hover, disabled, buttonColor, new Rectangle(0,0,0,0)) { }
 
-        public Button(Texture2D up, Texture2D down, Texture2D hover, Texture2D disabled, Color buttonColor, Vector2 position, Vector2 size)
-            : this(up, down, hover, disabled, buttonColor, new Rectangle((int)position.X, (int)position.Y, (int)size.X, (int)size.Y)) { }
+        public Button(GraphicsDevice graphicsDevice,  Texture2D up, Texture2D down, Texture2D hover, Texture2D disabled, Color buttonColor, Vector2 position, Vector2 size)
+            : this(graphicsDevice, up, down, hover, disabled, buttonColor, new Rectangle((int)position.X, (int)position.Y, (int)size.X, (int)size.Y)) { }
 
-        public Button(Texture2D up, Texture2D down, Texture2D hover, Texture2D disabled, Color buttonColor, Rectangle bounds)
-            : base(bounds)
+        public Button(GraphicsDevice graphicsDevice, Texture2D up, Texture2D down, Texture2D hover, Texture2D disabled, Color buttonColor, Rectangle bounds)
+            : base(graphicsDevice, bounds)
         {
             if (up == null)
             {

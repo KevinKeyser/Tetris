@@ -61,16 +61,16 @@ namespace MiLib.UserInterface
             }
         }
 
-        public Panel(Rectangle bounds, Color backColor)
-            : base(bounds)
+        public Panel(GraphicsDevice graphicsDevice, Rectangle bounds, Color backColor)
+            : base(graphicsDevice, bounds)
         {
             this.backColor = backColor;
             components = new List<UIComponent>();
             oldSize = new Vector2(bounds.Width, bounds.Height);
         }
 
-        public Panel(Vector2 position, Vector2 size, Color backColor)
-            : base(position, size)
+        public Panel(GraphicsDevice graphicsDevice, Vector2 position, Vector2 size, Color backColor)
+            : base(graphicsDevice, position, size)
         {
             this.backColor = backColor;
             components = new List<UIComponent>();

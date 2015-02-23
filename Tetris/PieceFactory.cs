@@ -24,8 +24,8 @@ namespace Tetris
 
         public static Piece Square(Color color)
         {
-            return new Piece(new Color?[5][] { new Color?[] { color, null, color, null, color }, new Color?[] { null, color, null, color, null }, new Color?[] { color, null, color, null, color }, new Color?[] { null, color, null, color, null}, new Color?[] { null, null, null, null, null} }, 3) { CanRotate = true };
-            //return new Piece(new Color?[5][] { new Color?[] { null, null, null, null, null }, new Color?[] { null, null, color, color, null }, new Color?[] { null, null, color, color, null }, new Color?[] { null, null, null, null, null }, new Color?[] { null, null, null, null, null } }, 3) { CanRotate = false };
+            //return new Piece(new Color?[5][] { new Color?[] { color, null, color, null, color }, new Color?[] { null, color, null, color, null }, new Color?[] { color, null, color, null, color }, new Color?[] { null, color, null, color, null}, new Color?[] { null, null, null, null, null} }, 3) { CanRotate = true };
+            return new Piece(new Color?[5][] { new Color?[] { null, null, null, null, null }, new Color?[] { null, null, color, color, null }, new Color?[] { null, null, color, color, null }, new Color?[] { null, null, null, null, null }, new Color?[] { null, null, null, null, null } }, 3) { CanRotate = false };
         }
 
         public static Piece ReverseZ(Color color)

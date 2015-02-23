@@ -38,11 +38,11 @@ namespace Tetris
             dayTextBox = new TextBox(GraphicsManager.GraphicsDeviceManager.GraphicsDevice, new Rectangle(160, 500, 50, 50), GraphicsManager.ContentManager.Load<SpriteFont>("font"));
             yearTextBox = new TextBox(GraphicsManager.GraphicsDeviceManager.GraphicsDevice, new Rectangle(220, 500, 80, 50), GraphicsManager.ContentManager.Load<SpriteFont>("font"));
 
-            submitButton = new TextButton(pixel, null, null, null, Color.Green, GraphicsManager.ContentManager.Load<SpriteFont>("font"), "Submit", Color.Black);
+            submitButton = new TextButton(GraphicsManager.GraphicsDeviceManager.GraphicsDevice, pixel, null, null, null, Color.Green, GraphicsManager.ContentManager.Load<SpriteFont>("font"), "Submit", Color.Black);
             submitButton.Size = new Vector2(150, 50);
             submitButton.Position = new Vector2(400, 425);
             submitButton.LeftClicked += submitButton_LeftClicked;
-            backButton = new TextButton(pixel, null, null, null, Color.Green, GraphicsManager.ContentManager.Load<SpriteFont>("font"), "Back", Color.Black);
+            backButton = new TextButton(GraphicsManager.GraphicsDeviceManager.GraphicsDevice, pixel, null, null, null, Color.Green, GraphicsManager.ContentManager.Load<SpriteFont>("font"), "Back", Color.Black);
             backButton.Size = new Vector2(150, 50);
             backButton.Position = new Vector2(400, 500);
             backButton.LeftClicked += backButton_LeftClicked;
